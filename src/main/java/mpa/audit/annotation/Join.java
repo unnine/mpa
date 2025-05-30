@@ -1,6 +1,5 @@
-package mpa.persistence.annotation;
+package mpa.audit.annotation;
 
-import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -11,14 +10,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Component
-public @interface Entity {
+public @interface Join {
 
-    @AliasFor("name")
-    String value() default "";
+    Class<?> entity();
 
-    @AliasFor("value")
-    String name() default "";
+    String auditName();
 
-    String schema() default "";
+    String definition();
+
+    String joinProperty();
+
+    String[] withProperties() default {};
+
+    boolean chain() default true;
 
 }
