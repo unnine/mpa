@@ -1,7 +1,6 @@
-package mpa.persistence.annotation;
+package mpa.audit.annotation;
 
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,15 +9,12 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Component
-public @interface Entity {
+public @interface AuditJoinDefinitions {
 
-    @AliasFor("name")
-    String value() default "";
+    @AliasFor("definitions")
+    AuditJoinDefinition[] value() default {};
 
     @AliasFor("value")
-    String name() default "";
-
-    String schema() default "";
+    AuditJoinDefinition[] definitions() default {};
 
 }
