@@ -1,7 +1,5 @@
 package mpa.annotation;
 
-import mpa.persistence.annotation.Entity;
-import mpa.persistence.annotation.Id;
 import mpa.util.Log;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 import org.springframework.core.annotation.AnnotationUtils;

@@ -1,8 +1,8 @@
 package mpa.entity;
 
 import lombok.Getter;
-import mpa.audit.repository.database.schema.MetaTable;
-import mpa.audit.repository.database.sql.AuditSQL;
+import mpa.audit_old.repository.database.schema.MetaTable;
+import mpa.audit_old.repository.database.sql.AuditSQL;
 
 @Getter
 public class GeneralEntityDefinition implements EntityDefinition {

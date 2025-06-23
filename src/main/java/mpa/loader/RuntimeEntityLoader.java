@@ -1,21 +1,21 @@
 package mpa.loader;
 
 import lombok.RequiredArgsConstructor;
+import mpa.annotation.Entity;
 import mpa.annotation.MPAAnnotations;
-import mpa.audit.config.ScopedAuditConfiguration;
-import mpa.audit.config.holder.AuditApplicationContextAware;
-import mpa.audit.config.holder.AuditScopeAware;
-import mpa.audit.config.type.DatabaseType;
-import mpa.audit.repository.database.DataAccessRepository;
-import mpa.audit.repository.database.schema.MetaData;
-import mpa.audit.repository.database.schema.MetaTable;
-import mpa.audit.repository.database.sql.MetaDataSQL;
-import mpa.audit.repository.database.sql.PrimaryIdentifierAuditSQL;
-import mpa.audit.repository.database.sql.QueryWriter;
+import mpa.audit_old.config.ScopedAuditConfiguration;
+import mpa.audit_old.config.holder.AuditApplicationContextAware;
+import mpa.audit_old.config.holder.AuditScopeAware;
+import mpa.audit_old.config.type.DatabaseType;
+import mpa.audit_old.repository.database.DataAccessRepository;
+import mpa.audit_old.repository.database.schema.MetaData;
+import mpa.audit_old.repository.database.schema.MetaTable;
+import mpa.audit_old.repository.database.sql.MetaDataSQL;
+import mpa.audit_old.repository.database.sql.PrimaryIdentifierAuditSQL;
+import mpa.audit_old.repository.database.sql.QueryWriter;
 import mpa.entity.EntityDefinition;
 import mpa.entity.GeneralEntityDefinition;
 import mpa.entity.cache.EntityCache;
-import mpa.persistence.annotation.Entity;
 import mpa.util.Log;
 import org.springframework.util.StringUtils;
 
@@ -33,14 +33,12 @@ public class RuntimeEntityLoader implements EntityLoader {
     private final EntityCache entityCache;
     private final DataAccessRepository dataAccessRepository;
     private final QueryWriter queryWriter;
-    private final RepositoryScanner repositoryScanner;
 
 
     @Override
     public void load() {
         caching();
         generateAuditQuery();
-        repositoryScanner.scan();
     }
 
     private void caching() {
