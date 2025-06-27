@@ -1,6 +1,6 @@
 package mpa.audit_old.annotation;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.config.type.CommandType;
 
 public class AuditAnnotationInfo {
@@ -15,14 +15,14 @@ public class AuditAnnotationInfo {
 
 
     public AuditAnnotationInfo(Class<?> target, String label) {
-        this.tableName = MPAAnnotations.getTableName(target);
+        this.tableName = EntityAnnotations.getTableName(target);
         this.target = target;
         this.label = label;
         this.commandType = CommandType.UNKNOWN;
     }
 
     public AuditAnnotationInfo(Class<?> target, String label, CommandType commandType) {
-        this.tableName = MPAAnnotations.getTableName(target);
+        this.tableName = EntityAnnotations.getTableName(target);
         this.target = target;
         this.label = label;
         this.commandType = commandType;

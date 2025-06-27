@@ -1,19 +1,19 @@
 package mpa.audit_old.repository.database.sql;
 
 import lombok.Getter;
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.annotation.AuditAnnotations;
 import mpa.audit_old.config.ScopedAuditConfiguration;
 import mpa.audit_old.config.strategy.JoinStrategy;
 import mpa.audit_old.config.strategy.StringCaseConverter;
 import mpa.audit_old.repository.database.schema.MetaColumn;
 import mpa.audit_old.repository.database.schema.MetaTable;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.audit_old.annotation.AuditJoin;
 import mpa.audit_old.annotation.AuditJoinDefinition;
 import mpa.audit_old.annotation.AuditJoinDefinitions;
 import mpa.util.Log;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -132,7 +132,7 @@ public class JoinQueryWriter implements QueryWriter {
     }
 
     private String getTableName(Class<?> entityClass) {
-        return MPAAnnotations.getTableName(entityClass);
+        return EntityAnnotations.getTableName(entityClass);
     }
 
     private boolean emptyCache(String tableName) {

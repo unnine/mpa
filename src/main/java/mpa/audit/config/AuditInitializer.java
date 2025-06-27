@@ -1,0 +1,41 @@
+package mpa.audit.config;
+
+public class AuditInitializer {
+
+//    private final AuditScopeDefinition scopeDefinition;
+//    private final AuditPointCutFactory pointCutFactory;
+
+//    public AuditInitializer(AuditScopeDefinition scopeDefinition, AuditPointCutFactory pointCutFactory) {
+//        this.scopeDefinition = scopeDefinition;
+//        this.pointCutFactory = pointCutFactory;
+//    }
+
+//    @Bean
+//    public BeanPostProcessor auditAdvisorBeanPostProcessor(ApplicationContext context) {
+//        AuditApplicationContextAware applicationContextAware = new AuditApplicationContextAware(context);
+//        SharedDependencyFactory sharedDependencyFactory = new SharedDependencyFactory(applicationContextAware);
+//        AuditAdvisorFactory auditAdvisorFactory = new AuditAdvisorFactory(pointCutFactory);
+//
+//        Map<AuditScopeAware, Advisor> advisors = createAdvisors(sharedDependencyFactory, auditAdvisorFactory);
+//
+//        return new AuditAdvisorBeanPostProcessor(advisors);
+//    }
+//
+//    private Map<AuditScopeAware, Advisor> createAdvisors(SharedDependencyFactory sharedDependencyFactory, AuditAdvisorFactory advisorFactory) {
+//        Map<AuditScopeAware, Advisor> map = new HashMap<>();
+//
+//        scopeDefinition.forEach(scope -> {
+//            AuditScopeAware scopeAware = scope.toAware();
+//            ScopedDependencyFactory scopedDependencyFactory = new ScopedDependencyFactory(sharedDependencyFactory, scopeAware);
+//
+//            EntityLoader entityLoader = scopedDependencyFactory.entityLoader();
+//            entityLoader.load();
+//
+//            AuditProvider.addFactory(scopeAware, scopedDependencyFactory);
+//
+//            Advisor advisor = advisorFactory.create(scopeAware, scopedDependencyFactory.auditAdvice());
+//            map.put(scopeAware, advisor);
+//        });
+//        return map;
+//    }
+}

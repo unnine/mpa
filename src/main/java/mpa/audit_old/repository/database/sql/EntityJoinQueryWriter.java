@@ -2,19 +2,19 @@ package mpa.audit_old.repository.database.sql;
 
 import lombok.Builder;
 import lombok.Getter;
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.annotation.AuditAnnotations;
 import mpa.audit_old.config.ScopedAuditConfiguration;
 import mpa.audit_old.config.strategy.StringCaseConverter;
 import mpa.audit_old.repository.database.schema.MetaColumn;
 import mpa.audit_old.repository.database.schema.MetaTable;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.audit_old.annotation.AuditEntityJoin;
 import mpa.audit_old.annotation.AuditJoinDefinition;
 import mpa.audit_old.annotation.AuditJoinDefinitions;
 import mpa.audit_old.annotation.Join;
 import mpa.util.Log;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -193,7 +193,7 @@ public class EntityJoinQueryWriter implements QueryWriter {
     }
 
     private boolean emptyCache(Class<?> entityClass) {
-        String tableName = MPAAnnotations.getTableName(entityClass);
+        String tableName = EntityAnnotations.getTableName(entityClass);
         return !entityCache.existsByTableName(tableName);
     }
 
@@ -202,7 +202,7 @@ public class EntityJoinQueryWriter implements QueryWriter {
     }
 
     private MetaTable getMetaTable(Class<?> entityClass) {
-        String tableName = MPAAnnotations.getTableName(entityClass);
+        String tableName = EntityAnnotations.getTableName(entityClass);
         return getMetaTable(tableName);
     }
 

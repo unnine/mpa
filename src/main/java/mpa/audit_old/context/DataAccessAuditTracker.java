@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mpa.audit_old.AuditTrail;
 import mpa.audit_old.repository.database.DataAccessRepository;
 import mpa.audit_old.repository.database.schema.Data;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;

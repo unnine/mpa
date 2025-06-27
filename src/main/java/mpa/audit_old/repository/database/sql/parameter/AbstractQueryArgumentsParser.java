@@ -1,6 +1,6 @@
 package mpa.audit_old.repository.database.sql.parameter;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.util.ClassUtil;
 
 import java.lang.reflect.Field;
@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 public abstract class AbstractQueryArgumentsParser implements QueryArgumentsParser {
 
     protected boolean isId(Field f) {
-        return f.isAnnotationPresent(MPAAnnotations.IDENTIFY);
+        return f.isAnnotationPresent(EntityAnnotations.IDENTIFY);
     }
 
     protected String getValueByFieldName(Object o, String fieldName) {

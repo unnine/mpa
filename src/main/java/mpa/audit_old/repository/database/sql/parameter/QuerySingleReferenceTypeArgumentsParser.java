@@ -2,7 +2,7 @@ package mpa.audit_old.repository.database.sql.parameter;
 
 import mpa.audit_old.config.ScopedAuditConfiguration;
 import mpa.audit_old.config.strategy.StringCaseConverter;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.util.ClassUtil;
 
 import java.lang.reflect.Field;

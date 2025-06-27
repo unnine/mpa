@@ -1,6 +1,6 @@
 package mpa.audit_old.repository.database.sql;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.config.ScopedAuditConfiguration;
 import mpa.audit_old.config.strategy.StringCaseConverter;
 import mpa.audit_old.repository.database.schema.ColumnImpl;
@@ -53,7 +53,7 @@ public class PrimaryIdentifierAuditSQL implements AuditSQL {
         List<String> idColumnNames = new ArrayList<>();
 
         for (Field f : fields) {
-            if (f.isAnnotationPresent(MPAAnnotations.IDENTIFY)) {
+            if (f.isAnnotationPresent(EntityAnnotations.IDENTIFY)) {
                 idColumnNames.add(stringCaseConverter.convert(f.getName()));
             }
         }

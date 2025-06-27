@@ -2,8 +2,8 @@ package mpa;
 
 import java.util.Objects;
 import javax.annotation.Generated;
-import mpa.annotation.Entity;
-import mpa.annotation.Id;
+import mpa.persistence.entity.annotation.Entity;
+import mpa.persistence.entity.annotation.Id;
 
 @Entity
 public class QmModl {

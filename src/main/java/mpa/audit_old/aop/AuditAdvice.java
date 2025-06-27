@@ -7,7 +7,7 @@ import mpa.audit_old.context.AuditTracker;
 import mpa.audit_old.repository.database.sql.parameter.QueryArgumentsParser;
 import mpa.audit_old.transaction.AuditTransactionListener;
 import mpa.audit_old.transaction.AuditTransactionManager;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 

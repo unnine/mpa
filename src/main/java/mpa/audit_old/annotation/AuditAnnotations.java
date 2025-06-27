@@ -1,6 +1,6 @@
 package mpa.audit_old.annotation;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.transaction.event.annotation.AfterCommit;
 import mpa.audit_old.transaction.event.annotation.AuditTrailListener;
 import mpa.audit_old.transaction.event.annotation.BeforeCommit;
@@ -46,7 +46,7 @@ public class AuditAnnotations {
         if (entityClass == null) {
             throw new AnnotationConfigurationException(Log.format("class not exists"));
         }
-        if (!entityClass.isAnnotationPresent(MPAAnnotations.ENTITY)) {
+        if (!entityClass.isAnnotationPresent(EntityAnnotations.ENTITY)) {
             throw new AnnotationConfigurationException(Log.format("class has not 'Entity' annotation. [%s]", entityClass.getName()));
         }
     }

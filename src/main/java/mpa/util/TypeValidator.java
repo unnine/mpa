@@ -8,10 +8,6 @@ public class TypeValidator {
         return v == Integer.class || v == int.class;
     }
 
-    public static boolean isVoid(Object v) {
-        return v.equals(Void.TYPE);
-    }
-
     public static boolean isPrimitive(Object v) {
         return ClassUtils.isPrimitiveOrWrapper(v.getClass());
     }

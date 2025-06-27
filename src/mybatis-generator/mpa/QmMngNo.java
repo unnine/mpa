@@ -2,7 +2,7 @@ package mpa;
 
 import java.time.LocalDateTime;
 import javax.annotation.Generated;
-import mpa.annotation.Entity;
+import mpa.persistence.entity.annotation.Entity;
 
 @Entity
 public class QmMngNo {

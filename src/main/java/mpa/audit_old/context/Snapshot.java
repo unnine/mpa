@@ -5,7 +5,7 @@ import mpa.audit_old.config.type.EventType;
 import mpa.audit_old.repository.database.sql.parameter.IdParameter;
 import mpa.audit_old.repository.database.sql.parameter.Parameter;
 import mpa.audit_old.repository.database.sql.parameter.QueryArgumentsParser;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.audit_old.annotation.AuditAnnotationInfo;
 
 import java.util.StringJoiner;

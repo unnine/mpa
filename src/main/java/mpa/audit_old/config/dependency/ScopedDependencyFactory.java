@@ -24,10 +24,10 @@ import mpa.audit_old.transaction.event.AuditEventPublisher;
 import mpa.audit_old.transaction.event.AuditEventPublisherImpl;
 import mpa.audit_old.transaction.event.loader.AnnotationAuditEventListenerLoader;
 import mpa.audit_old.transaction.event.loader.AuditEventListenerLoader;
-import mpa.entity.cache.EntityCache;
-import mpa.entity.cache.InMemoryEntityCache;
-import mpa.loader.EntityLoader;
-import mpa.loader.RuntimeEntityLoader;
+import mpa.persistence.entity.EntityCache;
+import mpa.persistence.entity.InMemoryEntityCache;
+import mpa.persistence.entity.EntityLoader;
+import mpa.persistence.entity.RuntimeEntityLoader;
 
 public class ScopedDependencyFactory extends AbstractDependencyFactory {
 

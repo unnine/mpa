@@ -8,7 +8,7 @@ import mpa.audit_old.config.dependency.SharedDependencyFactory;
 import mpa.audit_old.config.holder.AuditApplicationContextAware;
 import mpa.audit_old.config.holder.AuditScopeAware;
 import mpa.audit_old.config.scope.AuditScopeDefinition;
-import mpa.loader.EntityLoader;
+import mpa.persistence.entity.EntityLoader;
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;

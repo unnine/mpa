@@ -6,10 +6,10 @@ import mpa.audit_old.annotation.AuditAnnotations;
 import mpa.audit_old.context.AuditTracker;
 import mpa.audit_old.context.Snapshot;
 import mpa.audit_old.repository.database.sql.parameter.QueryArgumentsParser;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.audit_old.annotation.AuditAnnotationInfo;
 import mpa.util.TypeValidator;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.AccessibleObject;
@@ -85,7 +85,11 @@ public class AnnotationAuditMethodInvocation implements MethodInvocation {
 
     private boolean isAuditTarget() {
         Class<?> returnType = getMethod().getReturnType();
-        return TypeValidator.isInteger(returnType) || TypeValidator.isVoid(returnType);
+        return TypeValidator.isInteger(returnType) || isVoid(returnType);
+    }
+
+    public static boolean isVoid(Object v) {
+        return v.equals(Void.TYPE);
     }
 
     /**

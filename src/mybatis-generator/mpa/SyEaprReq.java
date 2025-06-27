@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.annotation.Generated;
-import mpa.annotation.Entity;
-import mpa.annotation.Id;
+import mpa.persistence.entity.annotation.Entity;
+import mpa.persistence.entity.annotation.Id;
 
 @Entity
 public class SyEaprReq {

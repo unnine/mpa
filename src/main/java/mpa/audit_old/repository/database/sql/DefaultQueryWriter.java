@@ -1,13 +1,13 @@
 package mpa.audit_old.repository.database.sql;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.annotation.AuditAnnotations;
 import mpa.audit_old.config.ScopedAuditConfiguration;
 import mpa.audit_old.config.strategy.StringCaseConverter;
 import mpa.audit_old.repository.database.schema.*;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.util.Log;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -85,7 +85,7 @@ public class DefaultQueryWriter implements QueryWriter {
     }
 
     private String getTableName(Class<?> entityClass) {
-        return MPAAnnotations.getTableName(entityClass);
+        return EntityAnnotations.getTableName(entityClass);
     }
 
     private boolean emptyCache(String tableName) {

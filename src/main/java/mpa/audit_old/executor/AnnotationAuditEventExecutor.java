@@ -5,11 +5,11 @@ import mpa.audit_old.AuditTrail;
 import mpa.audit_old.context.AuditTracker;
 import mpa.audit_old.context.Snapshot;
 import mpa.audit_old.repository.database.sql.parameter.QueryArgumentsParser;
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 import mpa.audit_old.annotation.AuditAnnotationInfo;
 import mpa.audit_old.transaction.event.AuditCommitEvent;
 import mpa.audit_old.transaction.event.AuditEventPublisher;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package mpa.audit_old.aop;
 
-import mpa.annotation.MPAAnnotations;
+import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.audit_old.annotation.AuditAnnotations;
 import mpa.audit_old.config.holder.AuditScopeAware;
 import org.mybatis.spring.mapper.MapperFactoryBean;
@@ -116,7 +116,7 @@ public class AuditAdvisorBeanPostProcessor implements BeanPostProcessor {
     }
 
     private boolean isEntity(Class<?> beanClass) {
-        return beanClass.isAnnotationPresent(MPAAnnotations.ENTITY);
+        return beanClass.isAnnotationPresent(EntityAnnotations.ENTITY);
     }
 
     private boolean isAuditTrailListener(Class<?> beanClass) {

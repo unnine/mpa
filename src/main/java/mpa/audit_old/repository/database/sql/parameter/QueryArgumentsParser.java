@@ -1,6 +1,6 @@
 package mpa.audit_old.repository.database.sql.parameter;
 
-import mpa.entity.EntityDefinition;
+import mpa.persistence.entity.EntityDefinition;
 
 public interface QueryArgumentsParser {
 

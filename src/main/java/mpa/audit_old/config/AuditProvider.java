@@ -9,7 +9,7 @@ import mpa.audit_old.repository.database.sql.parameter.QueryArgumentsParser;
 import mpa.audit_old.annotation.AuditAnnotationInfo;
 import mpa.audit_old.transaction.event.AuditEventPublisher;
 import mpa.util.Log;
-import mpa.entity.cache.EntityCache;
+import mpa.persistence.entity.EntityCache;
 
 import java.util.HashMap;
 import java.util.Map;
