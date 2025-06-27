@@ -1,4 +1,4 @@
 package mpa.persistence;
 
-public interface MybatisPersistenceAssistantRepository {
+public interface MybatisPersistenceAssistantRepository<T> {
 }

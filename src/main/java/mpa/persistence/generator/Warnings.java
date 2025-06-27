@@ -1,12 +1,13 @@
 package mpa.persistence.generator;
 
-import mpa.util.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
+@Slf4j
 public class Warnings extends ArrayList<String> {
 
     public void print() {
-        super.forEach(Log::warn);
+        super.forEach(log::warn);
     }
 }

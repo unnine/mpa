@@ -128,9 +128,7 @@ public class MapperMethodsCustomizePlugin extends MapperCustomizePluginAdapter {
 
     @Override
     public boolean clientUpdateByPrimaryKeySelectiveMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
-        method.setName(MapperMethodName.UPDATE_BY_PRIMARY_KEY);
-        rewriteBodyToChangeCallMethodName(method, "update", MapperMethodName.UPDATE);
-        return true;
+        return false;
     }
 
     @Override
@@ -145,7 +143,9 @@ public class MapperMethodsCustomizePlugin extends MapperCustomizePluginAdapter {
 
     @Override
     public boolean clientUpdateByPrimaryKeyWithBLOBsMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
-        return false;
+        method.setName(MapperMethodName.UPDATE_BY_PRIMARY_KEY);
+        rewriteBodyToChangeCallMethodName(method, "update", MapperMethodName.UPDATE);
+        return true;
     }
 
     @Override
