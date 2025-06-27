@@ -1,5 +1,6 @@
 package mpa.persistence.generator.plugin;
 
+import mpa.persistence.generator.MybatisPersistenceQualifierGenerator;
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
@@ -63,7 +64,7 @@ public class RepositoryGeneratePlugin extends MapperCustomizePluginAdapter {
         FullyQualifiedJavaType mapperType = superInterface.getType();
         String mapperName = mapperType.getShortName();
         String packageName = mapperType.getPackageName();
-        String repositoryName = mapperName.substring(0, mapperName.length() - 5) + "Repository";
+        String repositoryName = mapperName.substring(0, mapperName.length() - 6) + "Repository";
         return packageName + "." + repositoryName;
     }
 
@@ -75,19 +76,50 @@ public class RepositoryGeneratePlugin extends MapperCustomizePluginAdapter {
 
         public RepositoryInterface(String name, Interface superInterface) {
             super(name);
-            this.addSuperInterface(superInterface.getType());
 
-            this.setVisibility(JavaVisibility.PUBLIC);
-
-            this.addImportedType(new FullyQualifiedJavaType("mpa.persistence.MybatisPersistenceAssistantRepository"));
-            this.addSuperInterface(new FullyQualifiedJavaType("MybatisPersistenceAssistantRepository"));
-
-            this.addImportedType(new FullyQualifiedJavaType("org.apache.ibatis.annotations.Mapper;"));
-            this.addAnnotation("@Mapper");
+            toAssistantRepository(superInterface);
 
             this.superInterface = superInterface;
+
+            inherits();
+            addToQualifier();
+            toMapper();
         }
 
+        private void toAssistantRepository(Interface interfaze) {
+            FullyQualifiedJavaType assistantInterface = new FullyQualifiedJavaType("MybatisPersistenceAssistantRepository");
+            String entityName = getEntityName(interfaze);
+            assistantInterface.addTypeArgument(new FullyQualifiedJavaType(entityName));
+
+            interfaze.addImportedType(new FullyQualifiedJavaType("mpa.persistence.MybatisPersistenceAssistantRepository"));
+            interfaze.addSuperInterface(assistantInterface);
+        }
+
+        private void inherits() {
+            this.addSuperInterface(superInterface.getType());
+            this.setVisibility(JavaVisibility.PUBLIC);
+        }
+
+        private void addToQualifier() {
+            FullyQualifiedJavaType mapperType = superInterface.getType();
+            String packageName = mapperType.getPackageName();
+            String scopeName = packageName.split("\\.")[0];
+            String qualifier = scopeName.toUpperCase();
+
+            this.addImportedType(new FullyQualifiedJavaType(MybatisPersistenceQualifierGenerator.QUALIFIER_DIRECTORY_NAME + "." + qualifier));
+            this.addAnnotation("@" + qualifier);
+        }
+
+        private void toMapper() {
+            this.addImportedType(new FullyQualifiedJavaType("org.apache.ibatis.annotations.Mapper"));
+            this.addAnnotation("@Mapper");
+        }
+
+        private String getEntityName(Interface interfaze) {
+            FullyQualifiedJavaType type = interfaze.getType();
+            String name = type.getShortName();
+            return name.substring(0, name.length() - 6);
+        }
 
         void addFindAllWithoutParametersMethod() {
             Method method = new Method("findAll");

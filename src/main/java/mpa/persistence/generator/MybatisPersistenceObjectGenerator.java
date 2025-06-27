@@ -2,6 +2,8 @@ package mpa.persistence.generator;
 
 public interface MybatisPersistenceObjectGenerator {
 
-    void generate();
+    String GENERATE_ROOT_DIRECTORY = "src/mybatis-persistence";
+
+    void generate(Directory directory);
 
 }
