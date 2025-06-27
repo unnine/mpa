@@ -1,7 +1,7 @@
 package mpa.repository;
 
 import mpa.SpringBootTestWithProfiles;
-import mpa.client.SyUserMRepository;
+import mpa.client.SyUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mybatis.dynamic.sql.select.CountDSLCompleter;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CountTest {
 
     @Autowired
-    SyUserMRepository userMRepository;
+    SyUserRepository userMRepository;
 
 
     @Test

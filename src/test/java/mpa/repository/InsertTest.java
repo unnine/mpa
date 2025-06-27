@@ -2,7 +2,7 @@ package mpa.repository;
 
 import mpa.SpringBootTestWithProfiles;
 import mpa.SyUser;
-import mpa.client.SyUserMRepository;
+import mpa.client.SyUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mybatis.dynamic.sql.select.SelectDSLCompleter;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InsertTest {
 
     @Autowired
-    SyUserMRepository userMRepository;
+    SyUserRepository userMRepository;
 
 
     @Test

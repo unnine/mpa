@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+    <context>
+        <scope>
+            <namespace>database</namespace>
+            <name>hk-lims</name>
+            <dataSource>
+                <driverClassName>oracle.jdbc.OracleDriver</driverClassName>
+                <connectionURL>jdbc:oracle:thin:@203.229.218.220:1521/ORCL</connectionURL>
+                <username>HK_QMS</username>
+                <password>HK_QMS</password>
+            </dataSource>
+        </scope>
+
+        <scope>
+            <namespace>database</namespace>
+            <name>qms</name>
+            <dataSource>
+                <driverClassName>oracle.jdbc.OracleDriver</driverClassName>
+                <connectionURL>jdbc:oracle:thin:@203.229.218.220:1521:orcl</connectionURL>
+                <username>PHM7_1_QMS_USER</username>
+                <password>PHM71QMSUSER</password>
+            </dataSource>
+        </scope>
+    </context>
+
+</configuration>

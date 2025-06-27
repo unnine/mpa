@@ -18,14 +18,14 @@ public class ModelEntityEnhancer implements ModelEnhancer {
     }
 
     private void toEntity(TopLevelClass topLevelClass) {
-        topLevelClass.addImportedType("mpa.annotation.Entity");
-        topLevelClass.addAnnotation("@Entity");
+        topLevelClass.addImportedType("mpa.persistence.entity.annotation.Entity");
+        topLevelClass.addAnnotation("@Entity(name = \"" + topLevelClass.getType().getShortName() + "\")");
     }
 
     private void markId(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         for (IntrospectedColumn id : introspectedTable.getPrimaryKeyColumns()) {
             findIdField(topLevelClass, id.getJavaProperty()).ifPresent(f -> {
-                topLevelClass.addImportedType("mpa.annotation.Id");
+                topLevelClass.addImportedType("mpa.persistence.entity.annotation.Id");
                 f.addAnnotation("@Id");
             });
         }

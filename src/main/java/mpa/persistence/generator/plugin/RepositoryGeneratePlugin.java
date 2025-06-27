@@ -63,7 +63,7 @@ public class RepositoryGeneratePlugin extends MapperCustomizePluginAdapter {
         FullyQualifiedJavaType mapperType = superInterface.getType();
         String mapperName = mapperType.getShortName();
         String packageName = mapperType.getPackageName();
-        String repositoryName = mapperName.substring(0, mapperName.length() - 5) + "Repository";
+        String repositoryName = mapperName.substring(0, mapperName.length() - 6) + "Repository";
         return packageName + "." + repositoryName;
     }
 
@@ -76,18 +76,27 @@ public class RepositoryGeneratePlugin extends MapperCustomizePluginAdapter {
         public RepositoryInterface(String name, Interface superInterface) {
             super(name);
             this.addSuperInterface(superInterface.getType());
-
             this.setVisibility(JavaVisibility.PUBLIC);
-
-            this.addImportedType(new FullyQualifiedJavaType("mpa.persistence.MybatisPersistenceAssistantRepository"));
-            this.addSuperInterface(new FullyQualifiedJavaType("MybatisPersistenceAssistantRepository"));
 
             this.addImportedType(new FullyQualifiedJavaType("org.apache.ibatis.annotations.Mapper;"));
             this.addAnnotation("@Mapper");
 
+            FullyQualifiedJavaType assistantInterface = new FullyQualifiedJavaType("MybatisPersistenceAssistantRepository");
+            String entityName = getEntityName(superInterface);
+//            this.addImportedType(new FullyQualifiedJavaType("mpa." + entityName));
+            assistantInterface.addTypeArgument(new FullyQualifiedJavaType(entityName));
+
+            superInterface.addImportedType(new FullyQualifiedJavaType("mpa.persistence.MybatisPersistenceAssistantRepository"));
+            superInterface.addSuperInterface(assistantInterface);
+
             this.superInterface = superInterface;
         }
 
+        private String getEntityName(Interface superInterface) {
+            FullyQualifiedJavaType mapperType = superInterface.getType();
+            String mapperName = mapperType.getShortName();
+            return mapperName.substring(0, mapperName.length() - 6);
+        }
 
         void addFindAllWithoutParametersMethod() {
             Method method = new Method("findAll");

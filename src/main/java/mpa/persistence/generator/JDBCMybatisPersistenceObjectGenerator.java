@@ -1,14 +1,29 @@
 package mpa.persistence.generator;
 
+import lombok.RequiredArgsConstructor;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Stream;
+
+@RequiredArgsConstructor
 public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistenceObjectGenerator {
+
+    private final Set<MybatisPersistenceGeneratorScope> contexts;
+
 
     @Override
     public void generate() {
         try {
+            clearDirectory();
+
             Configuration configuration = createGeneratorConfiguration();
             DefaultShellCallback shellCallback = new DefaultShellCallback(true);
             Warnings warnings = new Warnings();
@@ -23,36 +38,69 @@ public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistence
         }
     }
 
+    private void clearDirectory() {
+        File dir = new File("src/mybatis-persistence");
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+            return;
+        }
+
+        try (Stream<Path> walk = Files.walk(dir.toPath())) {
+            walk.sorted(Comparator.reverseOrder()).forEach(path -> {
+                try {
+                    Files.delete(path);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        dir.mkdirs();
+    }
+
     private Configuration createGeneratorConfiguration() {
         Configuration configuration = new Configuration();
-        configuration.addClasspathEntry(getDriverAbsolutePath());
-        configuration.addContext(createContext());
+        String path;
+
+        for (MybatisPersistenceGeneratorScope generateContext : contexts) {
+            path = getDriverAbsolutePath(generateContext);
+
+            if (!configuration.getClassPathEntries().contains(path)) {
+                configuration.addClasspathEntry(path);
+            }
+            configuration.addContext(toMybatisContext(generateContext));
+        }
         return configuration;
     }
 
-    private String getDriverAbsolutePath() {
+    private String getDriverAbsolutePath(MybatisPersistenceGeneratorScope generateContext) {
         try {
-            Class<?> driverClass = Class.forName("oracle.jdbc.OracleDriver"); // TODO driverClass 가져오기
+            Class<?> driverClass = Class.forName(generateContext.getDataSource().getDriverClassName());
             return driverClass.getProtectionDomain().getCodeSource().getLocation().toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Context createContext() {
+    private Context toMybatisContext(MybatisPersistenceGeneratorScope generateContext) {
         Context context = new Context(ModelType.CONDITIONAL);
-        context.setId("mybatisPersistenceAssistant");
+        context.setId(generateContext.getName());
         context.setTargetRuntime("MyBatis3DynamicSql");
         context.addPluginConfiguration(toStringPluginConfiguration());
         context.addPluginConfiguration(modelToEntityPluginConfiguration());
         context.addPluginConfiguration(mapperMethodsCustomizePluginConfiguration());
         context.addPluginConfiguration(repositoryGeneratePluginConfiguration());
         context.setCommentGeneratorConfiguration(commentGeneratorConfiguration());
-        context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration());
+        context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration(generateContext));
         context.setJavaTypeResolverConfiguration(javaTypeResolverConfiguration());
-        context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration());
-        context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration());
-        context.addTableConfiguration(tableConfiguration(context));
+        context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration(generateContext));
+        context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration(generateContext));
+        context.addTableConfiguration(tableConfiguration(generateContext, context));
         return context;
     }
 
@@ -87,15 +135,12 @@ public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistence
         return config;
     }
 
-    /**
-     * TODO Java Config / Boot 2가지 방식 고려
-     */
-    private JDBCConnectionConfiguration jdbcConnectionConfiguration() {
+    private JDBCConnectionConfiguration jdbcConnectionConfiguration(MybatisPersistenceGeneratorScope generateContext) {
         JDBCConnectionConfiguration config = new JDBCConnectionConfiguration();
-        config.setDriverClass("oracle.jdbc.OracleDriver"); // TODO 현재 데이터소스 드라이버
-        config.setConnectionURL("jdbc:oracle:thin:@203.229.218.220:1521:orcl"); // TODO 현재 데이터소스 URL
-        config.setUserId("PHM7_1_QMS_USER"); // TODO 현재 데이터소스 사용자명
-        config.setPassword("PHM71QMSUSER"); // TODO 현재 데이터소스 비밀번호
+        config.setDriverClass(generateContext.getDataSource().getDriverClassName());
+        config.setConnectionURL(generateContext.getDataSource().getConnectionURL());
+        config.setUserId(generateContext.getDataSource().getUsername());
+        config.setPassword(generateContext.getDataSource().getPassword());
         return config;
     }
 
@@ -106,23 +151,23 @@ public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistence
         return config;
     }
 
-    private JavaModelGeneratorConfiguration javaModelGeneratorConfiguration() {
+    private JavaModelGeneratorConfiguration javaModelGeneratorConfiguration(MybatisPersistenceGeneratorScope generateContext) {
         JavaModelGeneratorConfiguration config = new JavaModelGeneratorConfiguration();
-        config.setTargetProject("src/mybatis-generator");
-        config.setTargetPackage("mpa");
+        config.setTargetProject("src/mybatis-persistence");
+        config.setTargetPackage(generateContext.getTargetPackageName());
         return config;
     }
 
-    private JavaClientGeneratorConfiguration javaClientGeneratorConfiguration() {
+    private JavaClientGeneratorConfiguration javaClientGeneratorConfiguration(MybatisPersistenceGeneratorScope generateContext) {
         JavaClientGeneratorConfiguration config = new JavaClientGeneratorConfiguration();
-        config.setTargetProject("src/mybatis-generator");
-        config.setTargetPackage("mpa.client");
+        config.setTargetProject("src/mybatis-persistence");
+        config.setTargetPackage(generateContext.getTargetPackageName() + ".repository");
         return config;
     }
 
-    private TableConfiguration tableConfiguration(Context context) {
+    private TableConfiguration tableConfiguration(MybatisPersistenceGeneratorScope generateContext, Context context) {
         TableConfiguration config = new TableConfiguration(context);
-        config.setSchema("PHM7_1_QMS_USER"); // TODO 현재 데이터소스 드라이버
+        config.setSchema(generateContext.getDataSource().getUsername());
         config.setTableName("%");
         config.addProperty("useActualColumnNames", "false");
         return config;

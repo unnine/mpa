@@ -2,7 +2,7 @@ package mpa.repository;
 
 import mpa.SpringBootTestWithProfiles;
 import mpa.SyUser;
-import mpa.client.SyUserMRepository;
+import mpa.client.SyUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 public class DeleteTest {
 
     @Autowired
-    SyUserMRepository userMRepository;
+    SyUserRepository userMRepository;
 
 
     @Test

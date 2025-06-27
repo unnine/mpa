@@ -2,7 +2,7 @@ package mpa.repository;
 
 import mpa.SpringBootTestWithProfiles;
 import mpa.SyUser;
-import mpa.client.SyUserMRepository;
+import mpa.client.SyUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FindByIdTest {
 
     @Autowired
-    SyUserMRepository userMRepository;
+    SyUserRepository userMRepository;
 
 
     @Test

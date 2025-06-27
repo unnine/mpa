@@ -16,8 +16,12 @@ public class Log {
         log.warn(format(message), args);
     }
 
-    public static void error(String message, Throwable e) {
-        log.error(format(message), e);
+    public static void error(String message, Object... args) {
+        log.error(format(message), args);
+    }
+
+    public static void error(Throwable e) {
+        log.error(format(e.getMessage()), e);
     }
 
     public static String format(String message, Object... args) {
