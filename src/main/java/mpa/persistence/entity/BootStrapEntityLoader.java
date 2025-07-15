@@ -2,12 +2,12 @@ package mpa.persistence.entity;
 
 import lombok.RequiredArgsConstructor;
 import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.context.ApplicationContextAware;
+import mpa.persistence.context.Scope;
+import mpa.persistence.context.ScopeAware;
 import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.persistence.entity.schema.MetaData;
 import mpa.persistence.entity.schema.MetaTable;
-import mpa.persistence.context.ApplicationContextAware;
-import mpa.persistence.context.Scope;
-import mpa.persistence.context.ScopeTemplate;
 import mpa.util.Log;
 
 import java.util.Collection;
@@ -19,14 +19,14 @@ import java.util.Set;
 public class BootStrapEntityLoader implements EntityLoader {
 
     private final ApplicationContextAware contextAware;
-    private final ScopeTemplate scopeTemplate;
+    private final ScopeAware scopeAware;
     private final EntityCache entityCache;
     private final EntityMetaDataRepository metaDataRepository;
 
 
     @Override
     public void load() {
-        scopeTemplate.run(this::caching);
+        scopeAware.forEach(this::caching);
     }
 
     private void caching(Scope scope) {

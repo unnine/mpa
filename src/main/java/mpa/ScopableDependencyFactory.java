@@ -7,17 +7,19 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-public abstract class AbstractDependencyFactory implements DependencyFactory {
+public abstract class ScopableDependencyFactory implements DependencyFactory {
 
     private final Map<String, Object> factory = new HashMap<>();
 
 
+    @Override
     public void setInstance(Class<?> dependencyClass, Object dependency) {
         String key = getKey(dependencyClass);
         factory.put(key, dependency);
     }
 
-    protected <T> T getInstance(Class<T> type, Supplier<T> action) {
+    @Override
+    public <T> T getInstance(Class<T> type, Supplier<T> action) {
         if (notExistsInstance(type)) {
             setInstance(type, action.get());
         }

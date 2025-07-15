@@ -2,15 +2,16 @@ package mpa.audit.repository.dataaccess.sql;
 
 import lombok.RequiredArgsConstructor;
 import mpa.audit.config.strategy.CaseConversionStrategy;
-import mpa.persistence.entity.EntityCache;
+import mpa.persistence.context.Scopable;
 import mpa.persistence.context.Scope;
-import mpa.persistence.context.ScopeTemplate;
+import mpa.persistence.context.ScopeAware;
+import mpa.persistence.entity.EntityCache;
 
 @RequiredArgsConstructor
 public class BootStrapAuditSQLGenerator implements AuditSQLGenerator {
 
-    private final ScopeTemplate scopeTemplate;
-    private final EntityCache entityCache;
+    private final ScopeAware scopeAware;
+    private final Scopable<EntityCache> entityCache;
     private final AuditSQLCache auditSQLCache;
 
 
@@ -21,7 +22,7 @@ public class BootStrapAuditSQLGenerator implements AuditSQLGenerator {
 
 
     private void caching() {
-        scopeTemplate.run(scope -> {
+        scopeAware.forEach(scope -> {
             if (scope.getAuditAttribute().isAuditing()) {
                 cachingAuditSQL(scope);
             }
@@ -29,9 +30,9 @@ public class BootStrapAuditSQLGenerator implements AuditSQLGenerator {
     }
 
     private void cachingAuditSQL(Scope scope) {
-        entityCache.forEach(entityDefinition -> {
+        entityCache.getInstance(scope).forEach(entityDefinition -> {
             CaseConversionStrategy caseConversionStrategy = scope.getDataSourceAware().getCaseConversionStrategy();
-            DataAccessQueryWriter baseQueryWriter = new DataAccessQueryWriter(caseConversionStrategy, entityCache);
+            DataAccessQueryWriter baseQueryWriter = new DataAccessQueryWriter(caseConversionStrategy, entityCache.getInstance(scope));
             PrimaryIdentifierAuditSQL auditSQL = new PrimaryIdentifierAuditSQL(
                     caseConversionStrategy,
                     baseQueryWriter,

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 public class ScopeAware implements Iterable<Scope> {
@@ -32,11 +33,23 @@ public class ScopeAware implements Iterable<Scope> {
     }
 
     public Scope getByEntity(Class<?> entityClass) {
-        String packageName = entityClass.getPackageName();
+        return getByClassPackageName(entityClass.getPackageName());
+    }
+
+    public Scope getByRepository(Class<?> repositoryClass) {
+        return getByClassPackageName(repositoryClass.getPackageName());
+    }
+
+    private Scope getByClassPackageName(String packageName) {
+        Predicate<Scope> containsPackageName = contains(packageName);
         return scopes.values().stream()
-                .filter(scope -> packageName.contains(scope.getName()) || packageName.contains(scope.getBasePackage()))
+                .filter(containsPackageName)
                 .findAny()
-                .orElseThrow(() -> new InvalidAttributeStateException(Log.format("scope is null.")));
+                .orElseThrow(() -> new InvalidAttributeStateException(Log.format("package name '" + packageName + "' not contains in any scope")));
+    }
+
+    private Predicate<Scope> contains(String packageName) {
+        return scope -> packageName.contains(scope.getName()) || packageName.contains(scope.getBasePackage());
     }
 
     public Scope createDefaultScope() {

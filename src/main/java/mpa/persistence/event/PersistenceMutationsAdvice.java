@@ -3,7 +3,10 @@ package mpa.persistence.event;
 import lombok.RequiredArgsConstructor;
 import mpa.audit.config.strategy.CaseConversionStrategy;
 import mpa.persistence.MybatisPersistenceAssistantRepository;
-import mpa.persistence.context.*;
+import mpa.persistence.context.DataSourceAware;
+import mpa.persistence.context.Scopable;
+import mpa.persistence.context.Scope;
+import mpa.persistence.context.ScopeAware;
 import mpa.persistence.entity.EntityCache;
 import mpa.persistence.entity.EntityDefinition;
 import mpa.persistence.entity.annotation.EntityAnnotations;
@@ -21,8 +24,7 @@ import java.lang.reflect.Method;
 public class PersistenceMutationsAdvice implements MethodInterceptor {
 
     private final ScopeAware scopeAware;
-    private final EntityCache entityCache;
-    private final RuntimeThreadAttribute runtimeThreadAttribute;
+    private final Scopable<EntityCache> entityCache;
     private final PersistenceTransactionListener transactionListener;
     private final PersistenceMutationsEventListener mutationsEventListener;
 
@@ -30,9 +32,11 @@ public class PersistenceMutationsAdvice implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         try {
-            Scope scope = scopeAware.getByEntity(invocation.getMethod().getDeclaringClass());
-            transactionListener.synchronizeTransaction(scope);
-            MutationEvent event = createEvent(invocation);
+            transactionListener.synchronizeTransaction();
+
+            Class<?> repositoryClass = invocation.getMethod().getDeclaringClass();
+            Scope scope = scopeAware.getByRepository(repositoryClass);
+            MutationEvent event = createEvent(invocation, scope);
             return invoke(invocation, event);
 
         } catch (InvalidAttributeStateException e) {
@@ -62,22 +66,20 @@ public class PersistenceMutationsAdvice implements MethodInterceptor {
         }
     }
 
-    private MutationEvent createEvent(MethodInvocation invocation) {
-        RuntimeAttribute runtimeAttribute = runtimeThreadAttribute.get();
+    private MutationEvent createEvent(MethodInvocation invocation, Scope scope) {
         Method method = invocation.getMethod();
-        EntityDefinition entityDefinition = getEntityDefinition(method.getDeclaringClass(), runtimeAttribute);
+        EntityDefinition entityDefinition = getEntityDefinition(scope, method.getDeclaringClass());
         MutationType mutationType = findMatchedMutationType(method);
         MutationArgument mutationArgument = getMutationsArgumentEntity(invocation.getArguments());
-        return new MutationEvent(runtimeAttribute, entityDefinition, mutationType, mutationArgument);
+        return new MutationEvent(scope, entityDefinition, mutationType, mutationArgument);
     }
 
-    private EntityDefinition getEntityDefinition(Class<?> entityClass, RuntimeAttribute runtimeAttribute) {
-        Scope scope = runtimeAttribute.getScope();
+    private EntityDefinition getEntityDefinition(Scope scope, Class<?> entityClass) {
         DataSourceAware dataSourceAware = scope.getDataSourceAware();
         CaseConversionStrategy caseConversionStrategy = dataSourceAware.getCaseConversionStrategy();
         Class<?> entityType = getEntityClass(entityClass);
         String tableName = caseConversionStrategy.convert(EntityAnnotations.getTableName(entityType));
-        return entityCache.getByTableName(tableName);
+        return entityCache.getInstance(scope).getByTableName(tableName);
     }
 
     private MutationType findMatchedMutationType(Method method) {

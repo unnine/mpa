@@ -1,9 +1,6 @@
 package mpa.persistence.event;
 
 import lombok.RequiredArgsConstructor;
-import mpa.persistence.context.RuntimeAttribute;
-import mpa.persistence.context.RuntimeThreadAttribute;
-import mpa.persistence.context.Scope;
 import mpa.persistence.transaction.PersistenceTransactionListener;
 import mpa.persistence.transaction.PersistenceTransactionSynchronizationManager;
 
@@ -15,18 +12,15 @@ public class ContextPersistenceTransactionListener implements PersistenceTransac
 
     private final List<PersistenceTransactionListener> listeners = new ArrayList<>();
 
-    private final RuntimeThreadAttribute runtimeThreadAttribute;
-
 
     public void addListener(PersistenceTransactionListener listener) {
         this.listeners.add(listener);
     }
 
     @Override
-    public void synchronizeTransaction(Scope scope) {
+    public void synchronizeTransaction() {
         PersistenceTransactionSynchronizationManager.synchronizeTransaction(this);
-        runtimeThreadAttribute.set(new RuntimeAttribute(scope));
-        listeners.forEach(listener -> listener.synchronizeTransaction(scope));
+        listeners.forEach(PersistenceTransactionListener::synchronizeTransaction);
     }
 
     @Override
@@ -47,6 +41,5 @@ public class ContextPersistenceTransactionListener implements PersistenceTransac
 
     private void clear() {
         PersistenceTransactionSynchronizationManager.releaseResources();
-        runtimeThreadAttribute.clear();
     }
 }

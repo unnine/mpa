@@ -11,7 +11,7 @@ import mpa.persistence.event.ContextPersistenceTransactionListener;
 import org.springframework.context.ApplicationContext;
 
 @Getter
-public class MybatisPersistenceAssistantGlobalDependencyFactory extends AbstractDependencyFactory {
+public class MybatisPersistenceAssistantGlobalDependencyFactory extends ScopableDependencyFactory {
 
     private final PersistenceDependencyFactory persistenceDependencyFactory;
     private final AuditDependencyFactory auditDependencyFactory;
@@ -79,17 +79,7 @@ public class MybatisPersistenceAssistantGlobalDependencyFactory extends Abstract
     }
 
     ScopableFactory scopableFactory() {
-        return getInstance(ScopableFactory.class, () -> new ScopableFactory(
-                scopeAware(),
-                runtimeThreadAttribute()
-        ));
-    }
-
-    ScopeTemplate scopeTemplate() {
-        return getInstance(ScopeTemplate.class, () -> new ScopeTemplate(
-            scopeAware(),
-            runtimeThreadAttribute()
-        ));
+        return getInstance(ScopableFactory.class, () -> new ScopableFactory(scopeAware()));
     }
 
 
@@ -99,7 +89,7 @@ public class MybatisPersistenceAssistantGlobalDependencyFactory extends Abstract
     public EntityLoader entityLoader() {
         return getInstance(EntityLoader.class, () -> new BootStrapEntityLoader(
                 applicationContextAware(),
-                scopeTemplate(),
+                scopeAware(),
                 entityCache(),
                 entityMetaDataRepository()
         ));
@@ -112,10 +102,9 @@ public class MybatisPersistenceAssistantGlobalDependencyFactory extends Abstract
         });
     }
 
-    EntityCache entityCache() {
-        return getInstance(EntityCache.class, () -> {
-            Scopable<EntityCache> entityCacheScopable = scopableFactory().create(InMemoryEntityCache::new);
-            return new ScopableEntityCache(entityCacheScopable);
+    Scopable<EntityCache> entityCache() {
+        return (Scopable<EntityCache>) getInstance(EntityCache.class, () -> {
+            return scopableFactory().create(InMemoryEntityCache::new);
         });
     }
 

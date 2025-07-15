@@ -16,11 +16,14 @@ import mpa.audit.transaction.AuditPersistenceTransactionListener;
 import mpa.audit.transaction.event.*;
 import mpa.audit.transaction.event.loader.AnnotationAuditEventListenerLoader;
 import mpa.audit.transaction.event.loader.AuditEventListenerLoader;
-import mpa.persistence.context.*;
+import mpa.persistence.context.ApplicationContextAware;
+import mpa.persistence.context.Scopable;
+import mpa.persistence.context.ScopableFactory;
+import mpa.persistence.context.ScopeAware;
 import mpa.persistence.entity.EntityCache;
 
 @RequiredArgsConstructor
-public class AuditDependencyFactory extends AbstractDependencyFactory {
+public class AuditDependencyFactory extends ScopableDependencyFactory {
 
     private final MybatisPersistenceAssistantGlobalDependencyFactory globalDependencyFactory;
 
@@ -48,10 +51,6 @@ public class AuditDependencyFactory extends AbstractDependencyFactory {
 
     private ScopableFactory scopableFactory(){
         return globalDependencyFactory.scopableFactory();
-    }
-
-    private ScopeTemplate scopeTemplate() {
-        return globalDependencyFactory.scopeTemplate();
     }
 
 
@@ -102,7 +101,7 @@ public class AuditDependencyFactory extends AbstractDependencyFactory {
 
     AuditSQLGenerator auditSQLGenerator() {
         return getInstance(AuditSQLGenerator.class, () -> new BootStrapAuditSQLGenerator(
-            scopeTemplate(),
+            scopeAware(),
             entityCache(),
             auditSqlCache()
         ));
