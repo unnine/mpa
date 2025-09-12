@@ -2,10 +2,10 @@ package mpa.persistence.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.config.DataSourceConfigurer;
-import mpa.persistence.database.DatabaseType;
 import mpa.util.StringUtil;
+import org.apache.ibatis.session.SqlSessionFactory;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,18 +17,10 @@ public class DataSourceConfiguration implements DataSourceConfigurer {
 
 
     @Override
-    public DataSourceConfigurer dataSourceRef(String dataSourceRef) {
-        if (StringUtil.isNotEmpty(dataSourceRef)) {
-            dataSourceAware.setRef(dataSourceRef);
-            dataSourceAware.setDataSource(contextAware.getDataSourceByRefName(dataSourceRef));
-        }
-        return this;
-    }
-
-    @Override
-    public DataSourceConfigurer databaseType(DatabaseType databaseType) {
-        if (databaseType != null) {
-            dataSourceAware.setDatabaseType(databaseType);
+    public DataSourceConfigurer sqlSessionFactoryName(String sqlSessionFactoryName) {
+        if (StringUtil.isNotEmpty(sqlSessionFactoryName)) {
+            SqlSessionFactory sessionFactory = contextAware.getBean(sqlSessionFactoryName, SqlSessionFactory.class);
+            dataSourceAware.setSqlSessionFactory(sessionFactory);
         }
         return this;
     }

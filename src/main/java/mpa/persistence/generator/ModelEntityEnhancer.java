@@ -13,7 +13,9 @@ public class ModelEntityEnhancer implements ModelEnhancer {
     public void enhance(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         toEntity(topLevelClass);
         markId(topLevelClass, introspectedTable);
-        addGetterSetter(topLevelClass, introspectedTable);
+        addGetterSetterId(topLevelClass, introspectedTable);
+        addSetIfPresentMethods(topLevelClass, introspectedTable);
+        applyIgnoreToMethods(topLevelClass, introspectedTable);
         addEqualsAndHashCodeMethods(topLevelClass, introspectedTable);
     }
 
@@ -40,16 +42,16 @@ public class ModelEntityEnhancer implements ModelEnhancer {
         return Optional.empty();
     }
 
-    private void addGetterSetter(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+    private void addGetterSetterId(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         boolean hasSingleId = introspectedTable.getPrimaryKeyColumns().size() == 1;
         if (hasSingleId) {
             IntrospectedColumn id = introspectedTable.getPrimaryKeyColumns().get(0);
-            addGetMethod(topLevelClass, id);
-            addSetMethod(topLevelClass, id);
+            addGetIdMethod(topLevelClass, id);
+            addSetIdMethod(topLevelClass, id);
         }
     }
 
-    private void addGetMethod(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
+    private void addGetIdMethod(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
         if ("id".equalsIgnoreCase(introspectedColumn.getJavaProperty())) {
             return;
         }
@@ -60,7 +62,7 @@ public class ModelEntityEnhancer implements ModelEnhancer {
         topLevelClass.addMethod(method);
     }
 
-    private void addSetMethod(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
+    private void addSetIdMethod(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
         if ("id".equalsIgnoreCase(introspectedColumn.getJavaProperty())) {
             return;
         }
@@ -71,8 +73,59 @@ public class ModelEntityEnhancer implements ModelEnhancer {
         topLevelClass.addMethod(method);
     }
 
+    private void addSetIfPresentMethods(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
+            if (introspectedColumn.isIdentity()) {
+                continue;
+            }
+            addSetIfPresentMethod(topLevelClass, introspectedColumn);
+        }
+    }
+
+    private void addSetIfPresentMethod(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
+        String javaProperty = introspectedColumn.getJavaProperty();
+        Method method = new Method("set" + capitalizeFirst(javaProperty) + "WhenPresent");
+        method.setVisibility(JavaVisibility.PUBLIC);
+        method.addParameter(toParameter(introspectedColumn));
+        method.addBodyLine("if (" + introspectedColumn.getJavaProperty() + " == null) {");
+        method.addBodyLine("return;");
+        method.addBodyLine("}");
+        method.addBodyLine("this." + introspectedColumn.getJavaProperty() + " = " + introspectedColumn.getJavaProperty() + ";");
+        topLevelClass.addMethod(method);
+    }
+
+    public static String capitalizeFirst(String s) {
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+        StringBuilder sb = new StringBuilder(s);
+        sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+        return sb.toString();
+    }
+
     private Parameter toParameter(IntrospectedColumn introspectedColumn) {
         return new Parameter(introspectedColumn.getFullyQualifiedJavaType(), introspectedColumn.getJavaProperty());
+    }
+
+    private void applyIgnoreToMethods(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
+            String jdbcTypeName = introspectedColumn.getJdbcTypeName();
+
+            if (jdbcTypeName == null) {
+                continue;
+            }
+
+            if ("BLOB".equalsIgnoreCase(jdbcTypeName)) {
+                appendIgnoreAnnotation(topLevelClass, introspectedColumn);
+            }
+        }
+    }
+
+    private void appendIgnoreAnnotation(TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn) {
+        findIdField(topLevelClass, introspectedColumn.getJavaProperty()).ifPresent(f -> {
+            topLevelClass.addImportedType("mpa.audit.annotation.AuditIgnore");
+            f.addAnnotation("@AuditIgnore");
+        });
     }
 
     private void addEqualsAndHashCodeMethods(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {

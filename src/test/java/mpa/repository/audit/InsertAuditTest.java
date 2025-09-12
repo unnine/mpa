@@ -1,24 +1,23 @@
 package mpa.repository.audit;
 
+import default$.Member;
+import default$.repository.MemberRepository;
+import mpa.audit.AuditTrail;
 import mpa.audit.config.type.CommandType;
 import mpa.audit.config.type.EventType;
-import mpa.audit.context.AuditTrail;
-import mpa.context.MybatisPersistenceManager;
+import mpa.audit.event.AuditEventExecutor;
+import mpa.context.MybatisPersistenceAssistant;
+import mpa.fixture.AuditTestListener;
 import mpa.fixture.domain.MemberUtil;
-import mpa.fixture.domain.qualifier.TEST_DB;
-import mpa.fixture.domain.test_db.Member;
-import mpa.fixture.domain.test_db.repository.MemberRepository;
 import mpa.fixture.repository.RepositoryTest;
-import mpa.fixture.repository.audit.AuditTestListener;
 import mpa.fixture.service.TestMemberService;
 import mpa.fixture.transaction.TransactionTestTemplate;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.*;
 @DisplayName("insert audit")
 public class InsertAuditTest {
 
-    @TEST_DB
     @Autowired
     MemberRepository memberRepository;
 
@@ -38,25 +36,25 @@ public class InsertAuditTest {
     TestMemberService memberService;
 
     @Autowired
-    MybatisPersistenceManager mybatisPersistenceManager;
+    MybatisPersistenceAssistant mybatisPersistenceAssistant;
 
     @Autowired
     TransactionTestTemplate transactionTestTemplate;
 
-    AuditTestListener auditTestListener = mock(AuditTestListener.class);
+    AuditTestListener auditTestListener;
 
 
-    @BeforeAll
+    @BeforeEach
     void prepare() {
-        mybatisPersistenceManager.startAuditing();
-        mybatisPersistenceManager.registerAuditTrailListener(auditTestListener);
+        mybatisPersistenceAssistant.startAuditing();
+
+        auditTestListener = mock(AuditTestListener.class);
+        mybatisPersistenceAssistant.registerAuditTrailListener(auditTestListener);
     }
 
 
     @Test
-    @Transactional
     void byEntity_createUser_successAuditing() {
-
         // given
         Member member = MemberUtil.newMember("tester");
         ArgumentCaptor<List<AuditTrail>> auditTrailsArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -73,24 +71,14 @@ public class InsertAuditTest {
                 verify(auditTestListener, times(1)).afterCommit(auditTrailsArgumentCaptor.capture());
                 verify(auditTestListener, times(0)).manuallyCommit(anyList());
 
+                auditTrailsArgumentCaptor.getAllValues().forEach(auditTrails -> {
+                    assertThat(auditTrails).hasSizeGreaterThan(0);
 
-                List<AuditTrail> auditTrails = auditTrailsArgumentCaptor.getValue();
-
-                assertThat(auditTrails).hasSizeGreaterThan(0);
-
-                AuditTrail auditTrail = auditTrails.get(0);
-
-                assertThat(auditTrail.scope().getName()).isEqualTo("test_db");
-                assertThat(auditTrail.command()).isEqualTo(CommandType.INSERT);
-                assertThat(auditTrail.argument().getClass()).isEqualTo(Member.class);
-                assertThat(auditTrail.argument()).isEqualTo(member);
-                assertThat(auditTrail.tableName()).isEqualTo("MEMBER");
-                assertThat(auditTrail.event()).isEqualTo(EventType.TRANSACTION);
-                assertThat(auditTrail.idArgument().get("ID")).isEqualTo(String.valueOf(member.getId()));
-                assertThat(auditTrail.originData().isEmpty()).isTrue();
-                assertThat(auditTrail.updatedData().isEmpty()).isFalse();
-                assertThat(auditTrail.updatedTime()).isNotNull();
-                assertThat(auditTrail.label()).isEqualTo("insert member test");
+                    auditTrails.forEach(auditTrail -> {
+                        assertThat(auditTrail.event()).isEqualTo(EventType.TRANSACTION);
+                        commonAsserts(auditTrail, member);
+                    });
+                });
             }
 
             @Override
@@ -98,6 +86,63 @@ public class InsertAuditTest {
                 MemberUtil.deleteMember(jdbcTemplate);
             }
         });
+    }
+
+    @Test
+    void byManually_createUser_successAuditing() throws Exception {
+        // given
+        Member member = MemberUtil.newMember("tester");
+        ArgumentCaptor<List<AuditTrail>> auditTrailsArgumentCaptor = ArgumentCaptor.forClass(List.class);
+
+        transactionTestTemplate.run(new TransactionTestTemplate.Runner() {
+            @Override
+            public void when() {
+                AuditEventExecutor executor = mybatisPersistenceAssistant.createAuditEventExecutor()
+                        .defaultScope()
+                        .label("insert member test")
+                        .build();
+
+                executor.addEntity(member);
+
+                memberService.insert(member);
+
+                executor.execute();
+            }
+
+            @Override
+            public void then() {
+                verify(auditTestListener, times(0)).beforeCommit(anyList());
+                verify(auditTestListener, times(0)).afterCommit(anyList());
+                verify(auditTestListener, times(1)).manuallyCommit(auditTrailsArgumentCaptor.capture());
+
+                auditTrailsArgumentCaptor.getAllValues().forEach(auditTrails -> {
+                    assertThat(auditTrails).hasSizeGreaterThan(0);
+
+                    auditTrails.forEach(auditTrail -> {
+                        assertThat(auditTrail.event()).isEqualTo(EventType.MANUALLY);
+                        commonAsserts(auditTrail, member);
+                    });
+                });
+            }
+
+            @Override
+            public void compensate(JdbcTemplate jdbcTemplate) {
+                MemberUtil.deleteMember(jdbcTemplate);
+            }
+        });
+    }
+
+    private void commonAsserts(AuditTrail auditTrail, Member member) {
+        assertThat(auditTrail.scope().isDefault()).isTrue();
+        assertThat(auditTrail.command()).isEqualTo(CommandType.INSERT);
+        assertThat(auditTrail.argument().getClass()).isEqualTo(Member.class);
+        assertThat(auditTrail.argument()).isEqualTo(member);
+        assertThat(auditTrail.tableName()).isEqualTo("MEMBER");
+        assertThat(auditTrail.idArgument().get("ID")).isEqualTo(String.valueOf(member.getId()));
+        assertThat(auditTrail.originData().isEmpty()).isTrue();
+        assertThat(auditTrail.updatedData().isEmpty()).isFalse();
+        assertThat(auditTrail.updatedTime()).isNotNull();
+        assertThat(auditTrail.label()).isEqualTo("insert member test");
     }
 
 }

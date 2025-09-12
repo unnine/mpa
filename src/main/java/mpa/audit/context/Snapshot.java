@@ -1,7 +1,6 @@
 package mpa.audit.context;
 
 import lombok.Getter;
-import mpa.audit.annotation.AuditInfo;
 import mpa.audit.config.type.EventType;
 import mpa.audit.repository.sql.argument.Argument;
 import mpa.audit.repository.sql.argument.IdArgument;
@@ -26,12 +25,8 @@ public class Snapshot {
         this.key = generateAuditKey();
     }
 
-    public static Snapshot ofTransaction(AuditInfo auditInfo, EntityDefinition entityDefinition) {
-        return new Snapshot(EventType.TRANSACTION, auditInfo, entityDefinition);
-    }
-
-    public static Snapshot ofManually(AuditInfo auditInfo, EntityDefinition entityDefinition) {
-        return new Snapshot(EventType.MANUALLY, auditInfo, entityDefinition);
+    public static Snapshot of(AuditInfo auditInfo, EntityDefinition entityDefinition) {
+        return new Snapshot(auditInfo.getEventType(), auditInfo, entityDefinition);
     }
 
 

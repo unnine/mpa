@@ -1,7 +1,7 @@
 package mpa.persistence.context;
 
 import lombok.*;
-import mpa.audit.config.AuditAttribute;
+import mpa.persistence.config.audit.AuditAttribute;
 
 import java.util.function.Function;
 
@@ -11,7 +11,7 @@ import java.util.function.Function;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Scope {
 
-    public static final String DEFAULT_NAME = "__$default$scope";
+    public static final String DEFAULT_NAME = "default$";
 
     @EqualsAndHashCode.Include
     private String name;
@@ -19,6 +19,11 @@ public class Scope {
     private DataSourceAware dataSourceAware;
     private AuditAttribute auditAttribute;
     private boolean isDefault = false;
+
+
+    public AuditAttribute getAuditAttribute() {
+        return auditAttribute;
+    }
 
 
     public void setName(String name) {

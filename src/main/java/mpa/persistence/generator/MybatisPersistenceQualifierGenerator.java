@@ -7,14 +7,14 @@ import java.io.FileWriter;
 import java.util.Collection;
 
 @RequiredArgsConstructor
-public class MybatisPersistenceQualifierGenerator implements MybatisPersistenceObjectGenerator {
+public class MybatisPersistenceQualifierGenerator {
 
     public static final String QUALIFIER_DIRECTORY_NAME = "qualifier";
 
+    private final String directoryPath;
     private final Collection<MybatisPersistenceGeneratorScope> scopes;
 
 
-    @Override
     public void generate() {
         if (scopes == null) {
             return;
@@ -39,14 +39,16 @@ public class MybatisPersistenceQualifierGenerator implements MybatisPersistenceO
                     .append(";\n\n")
                     .append("import org.springframework.beans.factory.annotation.Qualifier;\n")
                     .append("\n")
+                    .append("import mpa.persistence.context.annotation.ScopeName;\n")
                     .append("import java.lang.annotation.ElementType;\n")
                     .append("import java.lang.annotation.Retention;\n")
                     .append("import java.lang.annotation.RetentionPolicy;\n")
                     .append("import java.lang.annotation.Target;\n")
                     .append("\n")
                     .append("@Retention(RetentionPolicy.RUNTIME)\n")
-                    .append("@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})\n")
+                    .append("@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })\n")
                     .append("@Qualifier\n")
+                    .append("@ScopeName(\"" + scope.getName() + "\")\n")
                     .append("public @interface ")
                     .append(className)
                     .append(" {}")
@@ -58,7 +60,7 @@ public class MybatisPersistenceQualifierGenerator implements MybatisPersistenceO
     }
 
     private Directory getQualifierDirectory() {
-        Directory dir = new Directory(GENERATE_ROOT_DIRECTORY + "/" + QUALIFIER_DIRECTORY_NAME);
+        Directory dir = new Directory(directoryPath + "/" + QUALIFIER_DIRECTORY_NAME);
 
         if (!dir.exists()) {
             dir.mkdirs();

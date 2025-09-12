@@ -1,7 +1,9 @@
 package mpa.config;
 
-import mpa.persistence.config.PersistenceConfigurer;
+import mpa.persistence.config.ScopeRegistry;
 
-public interface MybatisPersistenceAssistantConfigurer extends PersistenceConfigurer {
+public interface MybatisPersistenceAssistantConfigurer {
+
+    default void registerScope(ScopeRegistry registry) {}
 
 }

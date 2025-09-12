@@ -1,6 +1,6 @@
 package mpa.persistence.generator;
 
-import lombok.extern.slf4j.Slf4j;
+import mpa.persistence.context.Scope;
 import mpa.util.FileUtil;
 import mpa.util.XMLReader;
 import org.w3c.dom.Document;
@@ -8,22 +8,19 @@ import org.w3c.dom.Document;
 import java.util.HashSet;
 import java.util.Set;
 
-@Slf4j
-public class XMLMybatisPersistenceObjectGeneratorRunner implements MybatisPersistenceObjectGenerator {
+public class XMLMybatisPersistenceObjectGeneratorRunner {
 
     private static final Set<MybatisPersistenceGeneratorScope> scopes = new HashSet<>();
 
 
-    @Override
-    public void generate() {
-        main(null);
-    }
-
     public static void main(String[] args) {
-        Document xml = FileUtil.getXMLFile("mybatis-persistence-assistant.xml");
+        Document xml = FileUtil.getXMLFile(
+                Thread.currentThread().getContextClassLoader(),
+                "mybatis-persistence-assistant.xml"
+        );
 
         if (xml == null) {
-            log.info("not detected configuration 'mybatis-persistence-assistant.xml' file at the classpath.");
+            System.out.println("not detected configuration 'mybatis-persistence-assistant.xml' file at the classpath.");
             return;
         }
 
@@ -43,7 +40,7 @@ public class XMLMybatisPersistenceObjectGeneratorRunner implements MybatisPersis
                     MybatisPersistenceGeneratorDataSource dataSource = new MybatisPersistenceGeneratorDataSource();
                     MybatisPersistenceGeneratorScope scope = new MybatisPersistenceGeneratorScope();
 
-                    scope.setName(scopeNode.childText("name"));
+                    setScopeName(scope, scopeNode);
                     scope.setNamespace(scopeNode.childText("namespace"));
 
                     scopeNode.child("dataSource", dataSourceNode -> {
@@ -61,5 +58,17 @@ public class XMLMybatisPersistenceObjectGeneratorRunner implements MybatisPersis
         });
 
         return scopes;
+    }
+
+    private static void setScopeName(MybatisPersistenceGeneratorScope scope, XMLReader.XMLNode scopeNode) {
+        String defaultScope = scopeNode.attribute("default");
+        boolean isDefaultScope = Boolean.parseBoolean(defaultScope);
+
+        if (isDefaultScope) {
+            scope.setName(Scope.DEFAULT_NAME);
+            return;
+        }
+
+        scope.setName(scopeNode.childText("name"));
     }
 }

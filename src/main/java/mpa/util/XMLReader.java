@@ -2,6 +2,7 @@ package mpa.util;
 
 import lombok.RequiredArgsConstructor;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -48,6 +49,15 @@ public class XMLReader {
                 return true;
             });
             return text.get();
+        }
+
+        public String attribute(String attributeName) {
+            NamedNodeMap attributes = node.getAttributes();
+            Node namedItem = attributes.getNamedItem(attributeName);
+            if (namedItem == null) {
+                return null;
+            }
+            return namedItem.getNodeValue();
         }
 
         private void handleChildByTagName(String tagName, Function<Node, Boolean> nodeHandler) {

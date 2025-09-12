@@ -1,8 +1,7 @@
 package mpa.fixture.service;
 
-import mpa.fixture.domain.qualifier.TEST_DB;
-import mpa.fixture.domain.test_db.Member;
-import mpa.fixture.domain.test_db.repository.MemberRepository;
+import default$.Member;
+import default$.repository.MemberRepository;
 import mpa.persistence.annotation.Mutations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestMemberService {
 
-    @TEST_DB
     @Autowired
     private MemberRepository memberRepository;
 

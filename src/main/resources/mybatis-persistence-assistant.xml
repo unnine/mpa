@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+    <generator>
+        <scope default="true">
+            <dataSource>
+                <driverClassName>org.h2.Driver</driverClassName>
+                <connectionURL>jdbc:h2:~/testdb;AUTO_SERVER=TRUE</connectionURL>
+                <username>sa</username>
+                <password></password>
+                <schema>PUBLIC</schema>
+            </dataSource>
+        </scope>
+    </generator>
+
+</configuration>

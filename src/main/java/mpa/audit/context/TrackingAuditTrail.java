@@ -1,5 +1,6 @@
 package mpa.audit.context;
 
+import mpa.audit.AuditTrail;
 import mpa.audit.repository.schema.Data;
 
 public interface TrackingAuditTrail {
@@ -8,7 +9,7 @@ public interface TrackingAuditTrail {
 
     boolean isUpdated();
 
-    void markAsUpdated();
+    void markingToUpdated();
 
     void update(Data data);
 

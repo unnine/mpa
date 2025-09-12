@@ -1,7 +1,6 @@
 package mpa.audit.context;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.annotation.AuditInfo;
 import mpa.persistence.entity.EntityCache;
 import mpa.persistence.entity.EntityDefinition;
 
@@ -32,6 +31,6 @@ public class AuditAgent {
 
     private Snapshot makeSnapshot(AuditInfo auditInfo) {
         EntityDefinition entityDefinition = entityCache.getByTableName(auditInfo.getTableName());
-        return Snapshot.ofTransaction(auditInfo, entityDefinition);
+        return Snapshot.of(auditInfo, entityDefinition);
     }
 }

@@ -1,9 +1,9 @@
 package mpa.context;
 
 import org.springframework.aop.Advisor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.GenericApplicationContext;
 
 @Configuration
 public class MybatisPersistenceAssistantInitializer {
@@ -11,7 +11,7 @@ public class MybatisPersistenceAssistantInitializer {
     private final MybatisPersistenceAssistantGlobalDependencyFactory dependencyFactory;
 
 
-    public MybatisPersistenceAssistantInitializer(ApplicationContext applicationContext) {
+    public MybatisPersistenceAssistantInitializer(GenericApplicationContext applicationContext) {
         this.dependencyFactory = new MybatisPersistenceAssistantGlobalDependencyFactory(applicationContext);
     }
 
@@ -25,11 +25,12 @@ public class MybatisPersistenceAssistantInitializer {
     @Bean
     public Advisor persistenceMutationsEventAdvisor() {
         PersistenceDependencyFactory persistenceDependencyFactory = dependencyFactory.getPersistenceDependencyFactory();
-        return persistenceDependencyFactory.persistenceMutationsEventAdvisor();
+        return persistenceDependencyFactory.persistenceMutationsTranctionEventAdvisor();
     }
 
     @Bean
-    public MybatisPersistenceManager mybatisPersistenceManager() {
-        return dependencyFactory.mybatisPersistenceManager();
+    public MybatisPersistenceAssistant mybatisPersistenceAssistant() {
+        return dependencyFactory.mybatisPersistenceAssistant();
     }
+
 }

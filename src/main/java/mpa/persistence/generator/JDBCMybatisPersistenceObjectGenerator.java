@@ -1,40 +1,69 @@
 package mpa.persistence.generator;
 
 import lombok.RequiredArgsConstructor;
+import mpa.util.ClassUtil;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
+import org.mybatis.generator.exception.InvalidConfigurationException;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistenceObjectGenerator {
+public class JDBCMybatisPersistenceObjectGenerator {
+
+    private static final String GENERATE_ROOT_DIRECTORY = "src/main/mybatis-persistence";
+    private static final String GENERATE_TEMP_DIRECTORY = "mybatis-persistence-temporary";
 
     private final Set<MybatisPersistenceGeneratorScope> scopes;
 
 
-    @Override
     public void generate() {
         try {
-            Directory directory = new Directory(GENERATE_ROOT_DIRECTORY);
-
-            clearDirectory(directory);
-            generateQualifiers();
-
-            Configuration configuration = createGeneratorConfiguration(directory);
-            DefaultShellCallback shellCallback = new DefaultShellCallback(true);
             Warnings warnings = new Warnings();
-            MyBatisGenerator generator = new MyBatisGenerator(configuration, shellCallback, warnings);
-            generator.generate(null);
+            Directory tempDirectory = new Directory(GENERATE_TEMP_DIRECTORY);
+            Directory dest = new Directory(GENERATE_ROOT_DIRECTORY);
+
+            clearDirectory(tempDirectory);
+            generateDomainFiles(tempDirectory, warnings);
 
             if (!warnings.isEmpty()) {
                 warnings.print();
+                return;
             }
+
+            clearDirectory(dest);
+            moveDirectory(tempDirectory, dest);
+            generateQualifiers(dest.getPath());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void generateQualifiers(String dest) {
+        MybatisPersistenceQualifierGenerator qualifierGenerator = new MybatisPersistenceQualifierGenerator(dest, scopes);
+        qualifierGenerator.generate();
+    }
+
+    private void generateDomainFiles(Directory directory, Warnings warnings) throws SQLException, IOException, InterruptedException, InvalidConfigurationException {
+        Configuration configuration = createGeneratorConfiguration(directory);
+        DefaultShellCallback shellCallback = new DefaultShellCallback(true);
+        MyBatisGenerator generator = new MyBatisGenerator(configuration, shellCallback, warnings);
+        generator.generate(null);
+    }
+
+    private void moveDirectory(Directory base, Directory dest) {
+        try {
+            Files.move(base.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -63,11 +92,6 @@ public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistence
         directory.mkdirs();
     }
 
-    private void generateQualifiers() {
-        MybatisPersistenceQualifierGenerator qualifierGenerator = new MybatisPersistenceQualifierGenerator(scopes);
-        qualifierGenerator.generate();
-    }
-
     private Configuration createGeneratorConfiguration(Directory directory) {
         Configuration configuration = new Configuration();
         String path;
@@ -85,12 +109,8 @@ public class JDBCMybatisPersistenceObjectGenerator implements MybatisPersistence
     }
 
     private String getDriverAbsolutePath(MybatisPersistenceGeneratorScope scope) {
-        try {
-            Class<?> driverClass = Class.forName(scope.getDataSource().getDriverClassName());
-            return driverClass.getProtectionDomain().getCodeSource().getLocation().toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Class<?> driverClass = ClassUtil.toClass(scope.getDataSource().getDriverClassName());
+        return driverClass.getProtectionDomain().getCodeSource().getLocation().toString();
     }
 
     private Context toContext(Directory directory, MybatisPersistenceGeneratorScope scope) {

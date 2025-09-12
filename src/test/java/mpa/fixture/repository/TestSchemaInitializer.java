@@ -21,10 +21,19 @@ public class TestSchemaInitializer {
                 "    updateDt date not null                            \n" +
                 "  );                                                    "
         );
+
+        jdbcTemplate.execute("" +
+                "  CREATE TABLE IF NOT EXISTS MY_LIKE (                 \n" +
+                "    id int primary key,                               \n" +
+                "    member_id int not null,                           \n" +
+                "    count int not null                                \n" +
+                "  );                                                    "
+        );
     }
 
     public void dropMemberTable() {
-        jdbcTemplate.execute("DROP TABLE MEMBER;");
+//        jdbcTemplate.execute("DROP TABLE MY_LIKE;");
+//        jdbcTemplate.execute("DROP TABLE MEMBER;");
     }
 
 }

@@ -12,6 +12,7 @@ public class TestDataInitializer {
 
 
     public void initMemberTable() {
+        jdbcTemplate.execute("DELETE FROM MY_LIKE");
         jdbcTemplate.execute("DELETE FROM MEMBER");
 
         jdbcTemplate.execute("" +
@@ -27,6 +28,18 @@ public class TestDataInitializer {
                 "    'test@mail.com',    \n" +
                 "    CURRENT_TIMESTAMP,  \n" +
                 "    CURRENT_TIMESTAMP   \n" +
+                ");                        "
+        );
+
+        jdbcTemplate.execute("" +
+                "  INSERT INTO MY_LIKE (    \n" +
+                "    id,                 \n" +
+                "    member_id,          \n" +
+                "    count               \n" +
+                ") VALUES (              \n" +
+                "    9998,               \n" +
+                "    9999,               \n" +
+                "    10                  \n" +
                 ");                        "
         );
     }

@@ -1,6 +1,5 @@
 package mpa.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -10,18 +9,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Slf4j
 public class FileUtil {
 
-    public static Document getXMLFile(String fileName) {
-        return getXMLFile(ClassLoader.getSystemClassLoader(), fileName);
-    }
-
-    private static Document getXMLFile(ClassLoader classLoader, String fileName) {
+    public static Document getXMLFile(ClassLoader classLoader, String fileName) {
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
 
             if (inputStream == null) {
-                log.warn("not found file resource.");
+                System.err.println("not found file resource.");
                 return null;
             }
 

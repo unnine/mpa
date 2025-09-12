@@ -1,11 +1,10 @@
 package mpa.repository.basic;
 
-import mpa.context.MybatisPersistenceManager;
-import mpa.fixture.repository.RepositoryTest;
+import default$.Member;
+import default$.repository.MemberRepository;
+import mpa.context.MybatisPersistenceAssistant;
 import mpa.fixture.domain.MemberUtil;
-import mpa.fixture.domain.qualifier.TEST_DB;
-import mpa.fixture.domain.test_db.Member;
-import mpa.fixture.domain.test_db.repository.MemberRepository;
+import mpa.fixture.repository.RepositoryTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,17 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("insert")
 public class InsertTest {
 
-    @TEST_DB
     @Autowired
     MemberRepository memberRepository;
 
     @Autowired
-    MybatisPersistenceManager mybatisPersistenceManager;
+    MybatisPersistenceAssistant mybatisPersistenceAssistant;
 
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceManager.stopAuditing();
+        mybatisPersistenceAssistant.stopAuditing();
     }
 
 

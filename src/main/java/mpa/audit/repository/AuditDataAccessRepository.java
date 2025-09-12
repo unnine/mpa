@@ -66,9 +66,10 @@ public class AuditDataAccessRepository implements DataAccessRepository {
                         row.addColumn(column);
 
                         if (column.isAdditional()) {
-                            data.addAdditionalColumn(column.additionalName(), column);
+                            data.addAdditionalColumn(column.name(), column);
                         }
                     }
+
                     data.addRow(row);
                 }
 

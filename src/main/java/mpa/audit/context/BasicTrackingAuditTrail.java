@@ -1,7 +1,8 @@
 package mpa.audit.context;
 
-import mpa.audit.annotation.AuditInfo;
-import mpa.audit.config.strategy.TrackingStrategy;
+import mpa.audit.AuditTrail;
+import mpa.audit.BasicAuditTrail;
+import mpa.persistence.config.audit.TrackingStrategy;
 import mpa.audit.config.type.CommandType;
 import mpa.audit.filter.ColumnsFilter;
 import mpa.audit.repository.schema.Data;
@@ -51,7 +52,7 @@ public class BasicTrackingAuditTrail implements TrackingAuditTrail {
     }
 
     @Override
-    public void markAsUpdated() {
+    public void markingToUpdated() {
         this.updatedTime = LocalDateTime.now();
     }
 
@@ -65,7 +66,7 @@ public class BasicTrackingAuditTrail implements TrackingAuditTrail {
         this.updatedData = data;
 
         if (updatedTime == null) {
-            markAsUpdated();
+            markingToUpdated();
         }
 
         columnsFilter.filter(getTrackingStrategy(), originData, updatedData);

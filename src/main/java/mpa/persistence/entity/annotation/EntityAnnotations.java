@@ -1,7 +1,7 @@
 package mpa.persistence.entity.annotation;
 
+import mpa.util.ClassUtil;
 import org.springframework.core.annotation.AnnotationConfigurationException;
-import org.springframework.core.annotation.AnnotationUtils;
 
 public class EntityAnnotations {
 
@@ -17,14 +17,14 @@ public class EntityAnnotations {
 
     public static Entity getEntity(Class<?> entityClass) {
         assertHasEntityAnnotation(entityClass);
-        return AnnotationUtils.findAnnotation(entityClass, ENTITY);
+        return ClassUtil.getAnnotation(entityClass, ENTITY);
     }
 
     private static void assertHasEntityAnnotation(Class<?> entityClass) {
         if (entityClass == null) {
             throw new AnnotationConfigurationException("class not exists");
         }
-        if (!entityClass.isAnnotationPresent(ENTITY)) {
+        if (!ClassUtil.isAnnotationPresent(entityClass, ENTITY)) {
             throw new AnnotationConfigurationException("class has not 'Entity' annotation. " + entityClass.getName());
         }
     }

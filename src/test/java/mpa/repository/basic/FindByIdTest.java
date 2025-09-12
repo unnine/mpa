@@ -1,9 +1,8 @@
 package mpa.repository.basic;
 
+import default$.Member;
+import default$.repository.MemberRepository;
 import mpa.fixture.repository.RepositoryTest;
-import mpa.fixture.domain.test_db.Member;
-import mpa.fixture.domain.qualifier.TEST_DB;
-import mpa.fixture.domain.test_db.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("findById")
 public class FindByIdTest {
 
-    @TEST_DB
     @Autowired
     MemberRepository memberRepository;
 

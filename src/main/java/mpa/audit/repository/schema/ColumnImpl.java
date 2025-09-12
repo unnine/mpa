@@ -7,11 +7,10 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ColumnImpl implements Column {
 
-    @EqualsAndHashCode.Include
-    private final String name;
+    private final boolean additional;
 
     @EqualsAndHashCode.Include
-    private final String additionalName;
+    private final String name;
 
     @EqualsAndHashCode.Include
     private final String value;
@@ -21,38 +20,27 @@ public class ColumnImpl implements Column {
 
     private boolean isOrigin = true;
 
-    private boolean isAdditional = false;
 
-    private Column origin;
-
-
-    private ColumnImpl(String name, String additionalName, String value, Comment comment) {
+    private ColumnImpl(boolean additional, String name, String value, Comment comment) {
+        this.additional = additional;
         this.name = getOrDefault(name, "");
-        this.additionalName = getOrDefault(additionalName, "");
         this.value = getOrDefault(value, "");
         this.comment = getOrDefault(comment, CommentImpl.ofDefault());
     }
 
-    private static Column empty() {
-        return new ColumnImpl(null, null, null, null);
-    }
-
-    public static ColumnImpl of(String name, String value, Comment comment) {
-        return new ColumnImpl(name, name, value, comment);
-    }
-
-    public static ColumnImpl ofAdditional(String name, String additionalName, String value, Comment comment) {
-        return new ColumnImpl(name, additionalName, value, comment);
+    public static ColumnImpl of(boolean additional, String name, String value, Comment comment) {
+        return new ColumnImpl(additional, name, value, comment);
     }
 
 
     @Override
-    public String name() {
-        return name;
+    public boolean isAdditional() {
+        return additional;
     }
 
-    public String additionalName() {
-        return additionalName;
+    @Override
+    public String name() {
+        return name;
     }
 
     @Override
@@ -63,27 +51,6 @@ public class ColumnImpl implements Column {
     @Override
     public Comment comment() {
         return comment;
-    }
-
-    @Override
-    public Column origin() {
-        if (origin == null) {
-            return ColumnImpl.empty();
-        }
-        return origin;
-    }
-
-    public void setOrigin(Column origin) {
-        if (origin == null) {
-            return;
-        }
-        this.origin = origin;
-        this.isOrigin = false;
-    }
-
-    @Override
-    public boolean isOrigin() {
-        return isOrigin;
     }
 
     @Override
@@ -103,12 +70,4 @@ public class ColumnImpl implements Column {
         return value;
     }
 
-    public void toAdditional() {
-        this.isAdditional = true;
-    }
-
-    @Override
-    public boolean isAdditional() {
-        return isAdditional;
-    }
 }

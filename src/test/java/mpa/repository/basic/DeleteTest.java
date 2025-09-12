@@ -1,10 +1,9 @@
 package mpa.repository.basic;
 
-import mpa.context.MybatisPersistenceManager;
+import default$.Member;
+import default$.repository.MemberRepository;
+import mpa.context.MybatisPersistenceAssistant;
 import mpa.fixture.repository.RepositoryTest;
-import mpa.fixture.domain.qualifier.TEST_DB;
-import mpa.fixture.domain.test_db.Member;
-import mpa.fixture.domain.test_db.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static mpa.fixture.domain.test_db.repository.MemberDynamicSqlSupport.id;
+import static default$.repository.MemberDynamicSqlSupport.id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 
@@ -22,17 +21,16 @@ import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 @DisplayName("delete")
 public class DeleteTest {
 
-    @TEST_DB
     @Autowired
     MemberRepository memberRepository;
 
     @Autowired
-    MybatisPersistenceManager mybatisPersistenceManager;
+    MybatisPersistenceAssistant mybatisPersistenceAssistant;
 
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceManager.stopAuditing();
+        mybatisPersistenceAssistant.stopAuditing();
     }
 
 

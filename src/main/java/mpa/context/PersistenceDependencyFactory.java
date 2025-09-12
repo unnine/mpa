@@ -6,9 +6,9 @@ import mpa.persistence.context.ScopeAware;
 import mpa.persistence.entity.EntityCache;
 import mpa.persistence.event.CompositePersistenceMutationsEventListener;
 import mpa.persistence.event.CompositePersistenceTransactionListener;
-import mpa.persistence.event.PersistenceMutationsAdvice;
+import mpa.persistence.event.PersistenceMutationsTransactionAdvice;
 import mpa.persistence.event.PersistenceMutationsPointCutFactory;
-import mpa.persistence.holder.MutationsAnnotationAdvice;
+import mpa.persistence.holder.AnnotationMutationsContextAdvice;
 import mpa.persistence.holder.MutationsAnnotationHolder;
 import mpa.persistence.holder.MutationsAnnotationPointCutFactory;
 import org.springframework.aop.Advisor;
@@ -43,13 +43,13 @@ public class PersistenceDependencyFactory extends ScopableDependencyFactory {
 
     Advisor mutationsAnnotationsAdvisor() {
         Pointcut pointcut = new MutationsAnnotationPointCutFactory().create();
-        MutationsAnnotationAdvice advice = new MutationsAnnotationAdvice(mutationsHolder());
+        AnnotationMutationsContextAdvice advice = new AnnotationMutationsContextAdvice(mutationsHolder());
         return new DefaultPointcutAdvisor(pointcut, advice);
     }
 
-    Advisor persistenceMutationsEventAdvisor() {
+    Advisor persistenceMutationsTranctionEventAdvisor() {
         Pointcut pointcut = new PersistenceMutationsPointCutFactory().create();
-        PersistenceMutationsAdvice advice = new PersistenceMutationsAdvice(
+        PersistenceMutationsTransactionAdvice advice = new PersistenceMutationsTransactionAdvice(
                 scopeAware(),
                 mutationsHolder(),
                 entityCache(),
@@ -64,12 +64,12 @@ public class PersistenceDependencyFactory extends ScopableDependencyFactory {
     /**
      * event
      */
-    CompositePersistenceTransactionListener persistenceTransactionListener() {
+    public CompositePersistenceTransactionListener persistenceTransactionListener() {
         return getInstance(CompositePersistenceTransactionListener.class, CompositePersistenceTransactionListener::new);
     }
 
 
-    CompositePersistenceMutationsEventListener persistenceMutationsEventListener() {
+    public CompositePersistenceMutationsEventListener persistenceMutationsEventListener() {
         return getInstance(CompositePersistenceMutationsEventListener.class, CompositePersistenceMutationsEventListener::new);
     }
 

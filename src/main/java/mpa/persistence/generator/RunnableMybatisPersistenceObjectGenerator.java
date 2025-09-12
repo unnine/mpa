@@ -1,85 +1,101 @@
 package mpa.persistence.generator;
 
 import lombok.RequiredArgsConstructor;
+import mpa.persistence.context.Scope;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class RunnableMybatisPersistenceObjectGenerator implements MybatisPersistenceObjectGenerator {
+public class RunnableMybatisPersistenceObjectGenerator {
 
     private static final Set<MybatisPersistenceGeneratorScope> scopes = new HashSet<>();
 
 
-    @Override
     public void generate() {
-        MybatisPersistenceObjectGenerator generator = new JDBCMybatisPersistenceObjectGenerator(scopes);
+        JDBCMybatisPersistenceObjectGenerator generator = new JDBCMybatisPersistenceObjectGenerator(scopes);
         generator.generate();
     }
 
-    public RunnableMybatisPersistenceObjectGenerator addScope(Consumer<ScopeConfigure> scopeConfigurer) {
+    public ScopeConfigurer addDefaultScope() {
         MybatisPersistenceGeneratorScope scope = new MybatisPersistenceGeneratorScope();
-        DataSourceConfigure dataSourceConfigure = new DataSourceConfigure(scope.getDataSource());
-        ScopeConfigure scopeConfigure = new ScopeConfigure(scope, dataSourceConfigure);
-        scopeConfigurer.accept(scopeConfigure);
+        DataSourceConfigurer dataSourceConfigurer = new DataSourceConfigurer(scope.getDataSource());
         scopes.add(scope);
-        return this;
+        ScopeConfigurer scopeConfigurer = new ScopeConfigurer(this, scope, dataSourceConfigurer);
+        scopeConfigurer.name(Scope.DEFAULT_NAME);
+        return scopeConfigurer;
+    }
+
+    public ScopeConfigurer addScope() {
+        MybatisPersistenceGeneratorScope scope = new MybatisPersistenceGeneratorScope();
+        DataSourceConfigurer dataSourceConfigurer = new DataSourceConfigurer(scope.getDataSource());
+        scopes.add(scope);
+        return new ScopeConfigurer(this, scope, dataSourceConfigurer);
     }
 
 
     @RequiredArgsConstructor
-    public static class ScopeConfigure {
+    public static class ScopeConfigurer {
 
+        private final RunnableMybatisPersistenceObjectGenerator and;
         private final MybatisPersistenceGeneratorScope scope;
-        private final DataSourceConfigure dataSourceConfigure;
+        private final DataSourceConfigurer dataSourceConfigurer;
 
 
-        public ScopeConfigure name(String name) {
+        public ScopeConfigurer name(String name) {
             scope.setName(name);
             return this;
         }
 
-        public ScopeConfigure namespace(String namespace) {
+        public ScopeConfigurer namespace(String namespace) {
             scope.setNamespace(namespace);
             return this;
         }
 
-        public ScopeConfigure dataSource(Consumer<DataSourceConfigure> dataSourceConfigurer) {
-            dataSourceConfigurer.accept(dataSourceConfigure);
+        public ScopeConfigurer dataSource(Consumer<DataSourceConfigurer> handler) {
+            handler.accept(dataSourceConfigurer);
             return this;
+        }
+
+        public RunnableMybatisPersistenceObjectGenerator and() {
+            return and;
         }
     }
 
 
     @RequiredArgsConstructor
-    public static class DataSourceConfigure {
+    public static class DataSourceConfigurer {
 
         private final MybatisPersistenceGeneratorDataSource dataSource;
 
 
-        public DataSourceConfigure driverClassName(String driverClassName) {
+        public DataSourceConfigurer driverClassName(String driverClassName) {
             dataSource.setDriverClassName(driverClassName);
             return this;
         }
 
-        public DataSourceConfigure connectionURL(String connectionURL) {
+        public DataSourceConfigurer connectionURL(String connectionURL) {
             dataSource.setConnectionURL(connectionURL);
             return this;
         }
 
-        public DataSourceConfigure username(String username) {
+        public DataSourceConfigurer username(String username) {
             dataSource.setUsername(username);
             return this;
         }
 
-        public DataSourceConfigure password(String password) {
+        public DataSourceConfigurer password(String password) {
             dataSource.setPassword(password);
             return this;
         }
 
-        public DataSourceConfigure schema(String schema) {
+        public DataSourceConfigurer schema(String schema) {
             dataSource.setSchema(schema);
             return this;
+        }
+
+        private MybatisPersistenceGeneratorDataSource getDataSource() {
+            return dataSource;
         }
     }
 }

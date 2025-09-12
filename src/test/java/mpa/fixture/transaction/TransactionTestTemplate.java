@@ -32,6 +32,10 @@ public class TransactionTestTemplate {
             }
             throw e;
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+
         } finally {
             runner.then();
             runner.compensate(jdbcTemplate);

@@ -2,14 +2,14 @@ package mpa.persistence.entity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mpa.audit.config.strategy.CaseConversionStrategy;
-import mpa.persistence.context.ApplicationContextAware;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.context.Scopable;
 import mpa.persistence.context.Scope;
 import mpa.persistence.context.ScopeAware;
 import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.persistence.entity.schema.MetaData;
 import mpa.persistence.entity.schema.MetaTable;
+import mpa.util.ClassUtil;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +20,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BootStrapEntityLoader implements EntityLoader {
 
-    private final ApplicationContextAware contextAware;
     private final ScopeAware scopeAware;
     private final Scopable<EntityCache> entityCacheScopable;
     private final Scopable<EntityMetaDataRepository> metaDataRepositoryScopable;
@@ -39,12 +38,11 @@ public class BootStrapEntityLoader implements EntityLoader {
     private Set<EntityDefinition> loadEntityDefinitions(Scope scope) {
         CaseConversionStrategy caseConversionStrategy = getCaseConversionStrategy(scope);
         Map<String, MetaTable> metaTables = getMetaTables(scope);
-        Collection<Object> entities = scanEntities();
+        Collection<Class<?>> entityClasses = scanEntityClasses(scope);
 
         Set<EntityDefinition> entityDefinitions = new HashSet<>();
 
-        for (Object entity : entities) {
-            Class<?> entityClass = entity.getClass();
+        for (Class<?> entityClass : entityClasses) {
             String tableName = caseConversionStrategy.convert(EntityAnnotations.getTableName(entityClass));
 
             if (!existsEntityInDatabase(metaTables, tableName)) {
@@ -69,9 +67,8 @@ public class BootStrapEntityLoader implements EntityLoader {
         return metaData.getTables();
     }
 
-    private Collection<Object> scanEntities() {
-        Map<String, Object> entities = contextAware.getBeansWithAnnotation(EntityAnnotations.ENTITY);
-        return entities.values();
+    private Collection<Class<?>> scanEntityClasses(Scope scope) {
+        return ClassUtil.findClassesWithAnnotation(scope.getName(), EntityAnnotations.ENTITY);
     }
 
     private boolean existsEntityInDatabase(Map<String, MetaTable> metaTables, String tableName) {

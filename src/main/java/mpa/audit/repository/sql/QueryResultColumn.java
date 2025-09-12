@@ -1,65 +1,62 @@
 package mpa.audit.repository.sql;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import mpa.audit.repository.schema.Column;
+import lombok.RequiredArgsConstructor;
 import mpa.audit.repository.schema.ColumnImpl;
 import mpa.audit.repository.schema.SchemaFactory;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryResultColumn {
 
-    @Getter
-    @Setter
-    private String sourceTableName;
+    private final boolean additional;
+
+    private final String tableName;
 
     @Getter
-    @Setter
-    private String sourceColumName;
+    private final String columName;
 
-    @Setter
-    private String tableName;
+    private final String value;
 
-    @Setter
-    private String name;
-
-    @Getter
-    @Setter
-    private String additionalName;
-
-    @Setter
-    private String value;
-
-    @Setter
-    private String comment;
-
-    private Column origin;
-
-    private boolean additional = false;
+    private final String comment;
 
 
-    public void toAdditional() {
-        this.additional = true;
+    public static QueryResultColumn of(String tableName, String columName, String value, String comment) {
+        return new QueryResultColumn(
+                false,
+                tableName,
+                columName,
+                value,
+                comment
+        );
     }
 
-    public void setOrigin(Column origin) {
-        if (origin == null) {
-            return;
-        }
-        this.origin = origin;
+    public static QueryResultColumn ofAdditional(String tableName, String columName, String value, String comment) {
+        return new QueryResultColumn(
+                true,
+                tableName,
+                columName,
+                value,
+                comment
+        );
+    }
+
+    public static QueryResultColumn empty() {
+        return new QueryResultColumn(false, null, null, null, null);
+    }
+
+
+    public boolean isEmpty() {
+        return tableName == null && columName == null;
     }
 
     public ColumnImpl toColumn() {
-        ColumnImpl column = SchemaFactory.createAdditionalColumn(name, additionalName, value, SchemaFactory.createComment(tableName, name, comment));
-
-        if (additional) {
-            column.toAdditional();
-        }
-
-        if (origin != null) {
-            column.setOrigin(origin);
-        }
-
-        return column;
+        return SchemaFactory.createColumn(
+                additional,
+                columName,
+                value,
+                SchemaFactory.createComment(tableName, columName, comment)
+        );
     }
 
 }

@@ -1,14 +1,14 @@
 package mpa.persistence.context;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.AuditAttribute;
-import mpa.audit.config.AuditConfiguration;
-import mpa.audit.config.AuditConfigurer;
 import mpa.persistence.config.DataSourceConfigurer;
 import mpa.persistence.config.ScopeConfigurer;
 import mpa.persistence.config.ScopeRegistry;
+import mpa.persistence.config.audit.AuditAttribute;
+import mpa.persistence.config.audit.AuditConfiguration;
+import mpa.persistence.config.audit.AuditConfigurer;
+import org.apache.ibatis.session.SqlSessionFactory;
 
-import javax.sql.DataSource;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -18,9 +18,9 @@ public class DataSourceScopeRegistry implements ScopeRegistry {
     private final ScopeAware scopeAware;
 
 
-    public void addDefaultScope(DataSource dataSource) {
+    public void addDefaultScope(SqlSessionFactory sqlSessionFactory) {
         Scope scope = Scope.ofDefault();
-        scope.setDataSourceAware(DataSourceAware.ofDefault(dataSource));
+        scope.setDataSourceAware(DataSourceAware.ofDefault(sqlSessionFactory));
         scope.setAuditAttribute(new AuditAttribute());
         scopeAware.add(scope);
     }
@@ -31,7 +31,10 @@ public class DataSourceScopeRegistry implements ScopeRegistry {
         scope.setDataSourceAware(DataSourceAware.create());
         scope.setAuditAttribute(new AuditAttribute());
         scopeAware.add(scope);
-        return createScopeConfigurer(scope);
+        ScopeConfigurer scopeConfigurer = createScopeConfigurer(scope);
+        return scopeConfigurer.database(dataSourceConfigurer -> dataSourceConfigurer
+                .sqlSessionFactoryName("sqlSessionFactory")
+        );
     }
 
     @Override

@@ -1,6 +1,5 @@
 package mpa.repository.generator;
 
-import mpa.persistence.generator.MybatisPersistenceObjectGenerator;
 import mpa.persistence.generator.XMLMybatisPersistenceObjectGeneratorRunner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -16,22 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class XMLGeneratorTest {
 
-    private static final String rootDirectoryPath = MybatisPersistenceObjectGenerator.GENERATE_ROOT_DIRECTORY;
-    private static final String testDirectoryPath = rootDirectoryPath + "/test_db";
+    private static final String rootDirectoryPath = "src/main/mybatis-persistence";
+    private static final String testDirectoryPath = rootDirectoryPath + "/default$";
     private static final String testQualifierPath = rootDirectoryPath + "/qualifier";
 
 
     @Test
     void runGenerator_baseXMLConfigurationFile_generatedEntityAndRepositoryClassFiles() {
-        // given
-        MybatisPersistenceObjectGenerator mybatisPersistenceObjectGeneratorRunner = new XMLMybatisPersistenceObjectGeneratorRunner();
-
         // when
-        mybatisPersistenceObjectGeneratorRunner.generate();
+        XMLMybatisPersistenceObjectGeneratorRunner.main(null);
 
         // then
         assertThatDirectory(new File(testQualifierPath));
-        assertThatFile(new File(testQualifierPath + "/TEST_DB.java"));
+        assertThatFile(new File(testQualifierPath + "/DEFAULT$.java"));
 
         assertThatDirectory(new File(testDirectoryPath));
         assertThatFile(new File(testDirectoryPath + "/Member.java"));
@@ -52,36 +48,6 @@ public class XMLGeneratorTest {
         assertThat(file.exists()).isTrue();
         assertThat(file.isDirectory()).isTrue();
         assertThat(file.isFile()).isFalse();
-    }
-
-
-    @AfterAll
-    static void destroy() {
-        try (Stream<Path> walk = Files.walk(new File(testDirectoryPath).toPath())) {
-            walk.sorted(Comparator.reverseOrder()).forEach(path -> {
-                try {
-                    Files.delete(path);
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            File qualifierDir = new File(testQualifierPath);
-            File qualifierFile = new File(testQualifierPath + "/TEST_DB.java");
-
-            if (qualifierDir.exists() && qualifierFile.exists()) {
-                qualifierFile.delete();
-            }
-
-            File[] childFiles = qualifierDir.listFiles();
-            if (childFiles == null || childFiles.length == 0) {
-                qualifierDir.delete();
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

@@ -49,7 +49,7 @@ public class MutationsAnnotationHolder {
                 .filter(node -> node.key.equals(getKey(method)))
                 .findAny();
 
-        if (nodeOptional.isEmpty()) {
+        if (!nodeOptional.isPresent()) {
             return;
         }
 

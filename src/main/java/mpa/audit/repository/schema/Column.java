@@ -2,17 +2,13 @@ package mpa.audit.repository.schema;
 
 public interface Column {
 
+    boolean isAdditional();
+
     String name();
 
     String value();
 
     Comment comment();
-
-    Column origin();
-
-    boolean isOrigin();
-
-    boolean isAdditional();
 
     boolean equalsData(Column column);
 

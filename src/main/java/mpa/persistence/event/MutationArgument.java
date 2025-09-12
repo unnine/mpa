@@ -1,6 +1,7 @@
 package mpa.persistence.event;
 
 import mpa.persistence.entity.annotation.EntityAnnotations;
+import mpa.util.ClassUtil;
 import mpa.util.TypeValidator;
 
 public class MutationArgument {
@@ -22,7 +23,7 @@ public class MutationArgument {
         if (o instanceof String) {
             return;
         }
-        if (o.getClass().isAnnotationPresent(EntityAnnotations.ENTITY)) {
+        if (ClassUtil.isAnnotationPresent(o.getClass(), EntityAnnotations.ENTITY)) {
            return;
         }
         this.invalid = true;

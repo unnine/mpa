@@ -1,7 +1,7 @@
 package mpa.audit.context;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.annotation.AuditInfo;
+import mpa.audit.AuditTrail;
 import mpa.audit.repository.DataAccessRepository;
 import mpa.audit.repository.schema.Data;
 import mpa.audit.repository.sql.AuditSQL;
@@ -50,7 +50,7 @@ public class DataAccessAuditTracker implements AuditTracker {
 
     private void markAsUpdated(Snapshot snapshot) {
         TrackingAuditTrail auditTrail = auditTrailContext.get(snapshot.getKey());
-        auditTrail.markAsUpdated();
+        auditTrail.markingToUpdated();
     }
 
     private void refreshTrackingId(Snapshot snapshot) {
