@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisPersistenceConfig implements MybatisPersistenceAssistantConfigurer {
 
     @Override
-    public void addScope(ScopeRegistry registry) {
+    public void registerScope(ScopeRegistry registry) {
         registry
                 .addScope("test_db")
                 .database(dataSourceConfigurer -> dataSourceConfigurer

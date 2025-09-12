@@ -32,6 +32,6 @@ public class AuditAgent {
 
     private Snapshot makeSnapshot(AuditInfo auditInfo) {
         EntityDefinition entityDefinition = entityCache.getByTableName(auditInfo.getTableName());
-        return Snapshot.ofTransaction(auditInfo, entityDefinition);
+        return Snapshot.of(auditInfo, entityDefinition);
     }
 }

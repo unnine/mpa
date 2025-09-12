@@ -1,8 +1,12 @@
 package mpa.persistence.entity.schema;
 
 import lombok.Builder;
+import mpa.util.StringUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 @Builder
@@ -10,7 +14,7 @@ public class MetaTableImpl implements MetaTable {
 
     private final String name;
 
-    private final String alias = "a" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 19);
+    private final String alias = StringUtil.random();
 
     private final Map<String, MetaColumn> columns = new HashMap<>();
 
@@ -22,6 +26,14 @@ public class MetaTableImpl implements MetaTable {
     @Override
     public String getAlias() {
         return alias;
+    }
+
+    @Override
+    public String addAlias(String s) {
+        if (StringUtil.isEmpty(alias)) {
+            return s;
+        }
+        return alias + "." + s;
     }
 
     @Override

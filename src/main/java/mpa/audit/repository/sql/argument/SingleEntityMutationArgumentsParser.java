@@ -1,7 +1,7 @@
 package mpa.audit.repository.sql.argument;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.entity.EntityDefinition;
 import mpa.persistence.entity.annotation.EntityAnnotations;
 import mpa.persistence.event.MutationArgument;

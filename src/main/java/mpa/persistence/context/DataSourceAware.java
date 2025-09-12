@@ -3,7 +3,7 @@ package mpa.persistence.context;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.database.DatabaseType;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 

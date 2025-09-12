@@ -2,7 +2,7 @@ package mpa.persistence.entity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.context.ApplicationContextAware;
 import mpa.persistence.context.Scopable;
 import mpa.persistence.context.Scope;

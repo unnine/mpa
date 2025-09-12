@@ -1,11 +1,12 @@
 package mpa.audit.repository.sql;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.audit.repository.schema.ColumnImpl;
 import mpa.audit.repository.sql.argument.Argument;
 import mpa.audit.repository.sql.argument.IdArgument;
 import mpa.persistence.entity.annotation.EntityAnnotations;
+import mpa.persistence.entity.schema.MetaTable;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -22,7 +23,7 @@ public class PrimaryIdentifierAuditSQL implements AuditSQL {
     private final CaseConversionStrategy caseConversionStrategy;
     private final QueryWriter queryWriter;
     private final Class<?> entityClass;
-    private final String alias;
+    private final MetaTable baseTable;
 
 
     @Override
@@ -61,9 +62,7 @@ public class PrimaryIdentifierAuditSQL implements AuditSQL {
                 clause.append(" AND ");
             }
             clause
-                    .append(alias)
-                    .append(".")
-                    .append(idColumnName)
+                    .append(baseTable.addAlias(idColumnName))
                     .append(" = ? ");
 
             conditionOrder.put(idColumnName, conditionOrder.size() + 1);
@@ -77,7 +76,7 @@ public class PrimaryIdentifierAuditSQL implements AuditSQL {
         StringJoiner clause = new StringJoiner(", ", " ORDER BY ", "");
 
         for (String idColumnName : idColumnNames) {
-            clause.add(alias + "." + idColumnName);
+            clause.add(baseTable.addAlias(idColumnName));
         }
         return clause.toString();
     }
@@ -107,6 +106,9 @@ public class PrimaryIdentifierAuditSQL implements AuditSQL {
     @Override
     public ColumnImpl getColumn(ResultSet resultSet, int columnIndex) throws SQLException {
         QueryResultColumn resultColumn = queryWriter.parse(resultSet, columnIndex);
+        if (resultColumn.isEmpty()) {
+            return null;
+        }
         return resultColumn.toColumn();
     }
 

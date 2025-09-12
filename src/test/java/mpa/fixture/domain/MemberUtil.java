@@ -1,6 +1,7 @@
 package mpa.fixture.domain;
 
 import mpa.fixture.domain.test_db.Member;
+import mpa.fixture.domain.test_db.MyLike;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;

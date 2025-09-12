@@ -1,6 +1,6 @@
 package mpa.audit.filter;
 
-import mpa.audit.config.strategy.TrackingStrategy;
+import mpa.persistence.config.audit.TrackingStrategy;
 import mpa.audit.repository.schema.Data;
 
 import java.util.ArrayList;

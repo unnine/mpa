@@ -1,6 +1,5 @@
 package mpa.persistence.config;
 
-import mpa.audit.config.strategy.CaseConversionStrategy;
 import mpa.persistence.database.DatabaseType;
 
 public interface DataSourceConfigurer {

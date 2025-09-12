@@ -25,11 +25,11 @@ public class MybatisPersistenceAssistantInitializer {
     @Bean
     public Advisor persistenceMutationsEventAdvisor() {
         PersistenceDependencyFactory persistenceDependencyFactory = dependencyFactory.getPersistenceDependencyFactory();
-        return persistenceDependencyFactory.persistenceMutationsEventAdvisor();
+        return persistenceDependencyFactory.persistenceMutationsTranctionEventAdvisor();
     }
 
     @Bean
-    public MybatisPersistenceManager mybatisPersistenceManager() {
-        return dependencyFactory.mybatisPersistenceManager();
+    public MybatisPersistenceAssistant mybatisPersistenceAssistant() {
+        return dependencyFactory.mybatisPersistenceAssistant();
     }
 }

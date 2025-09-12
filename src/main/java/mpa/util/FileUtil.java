@@ -13,11 +13,7 @@ import java.io.InputStream;
 @Slf4j
 public class FileUtil {
 
-    public static Document getXMLFile(String fileName) {
-        return getXMLFile(ClassLoader.getSystemClassLoader(), fileName);
-    }
-
-    private static Document getXMLFile(ClassLoader classLoader, String fileName) {
+    public static Document getXMLFile(ClassLoader classLoader, String fileName) {
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
 
             if (inputStream == null) {

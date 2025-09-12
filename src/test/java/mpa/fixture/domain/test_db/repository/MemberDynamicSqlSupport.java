@@ -1,10 +1,11 @@
 package mpa.fixture.domain.test_db.repository;
 
-import java.sql.JDBCType;
-import java.time.LocalDate;
-import javax.annotation.Generated;
 import org.mybatis.dynamic.sql.AliasableSqlTable;
 import org.mybatis.dynamic.sql.SqlColumn;
+
+import javax.annotation.Generated;
+import java.sql.JDBCType;
+import java.time.LocalDate;
 
 public final class MemberDynamicSqlSupport {
     @Generated("org.mybatis.generator.api.MyBatisGenerator")

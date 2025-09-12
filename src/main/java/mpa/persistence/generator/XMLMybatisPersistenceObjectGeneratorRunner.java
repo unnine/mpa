@@ -20,7 +20,10 @@ public class XMLMybatisPersistenceObjectGeneratorRunner implements MybatisPersis
     }
 
     public static void main(String[] args) {
-        Document xml = FileUtil.getXMLFile("mybatis-persistence-assistant.xml");
+        Document xml = FileUtil.getXMLFile(
+                XMLMybatisPersistenceObjectGeneratorRunner.class.getClassLoader(),
+                "mybatis-persistence-assistant.xml"
+        );
 
         if (xml == null) {
             log.info("not detected configuration 'mybatis-persistence-assistant.xml' file at the classpath.");

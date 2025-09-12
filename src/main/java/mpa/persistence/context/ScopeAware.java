@@ -28,7 +28,7 @@ public class ScopeAware implements Iterable<Scope> {
     }
 
     public Scope getByRepository(Class<?> repositoryClass) {
-        return getByClassPackageName(repositoryClass.getPackageName());
+        return getByClassPackageName(repositoryClass.getPackage().getName());
     }
 
     private Scope getByClassPackageName(String packageName) {

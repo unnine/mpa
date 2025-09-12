@@ -1,6 +1,7 @@
 package mpa.audit.context;
 
 import lombok.RequiredArgsConstructor;
+import mpa.audit.AuditTrail;
 import mpa.audit.annotation.AuditInfo;
 import mpa.audit.repository.DataAccessRepository;
 import mpa.audit.repository.schema.Data;

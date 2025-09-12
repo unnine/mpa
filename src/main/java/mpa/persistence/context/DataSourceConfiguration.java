@@ -2,7 +2,7 @@ package mpa.persistence.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.strategy.CaseConversionStrategy;
+import mpa.persistence.config.CaseConversionStrategy;
 import mpa.persistence.config.DataSourceConfigurer;
 import mpa.persistence.database.DatabaseType;
 import mpa.util.StringUtil;

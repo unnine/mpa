@@ -1,12 +1,12 @@
 package mpa.fixture.domain.test_db.repository;
 
-import java.util.List;
-
 import mpa.fixture.domain.qualifier.TEST_DB;
+import mpa.fixture.domain.test_db.Member;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.dynamic.sql.select.CountDSLCompleter;
 import org.mybatis.dynamic.sql.select.SelectDSLCompleter;
-import mpa.fixture.domain.test_db.Member;
+
+import java.util.List;
 
 @TEST_DB
 @Mapper

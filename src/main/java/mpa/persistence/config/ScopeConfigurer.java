@@ -1,6 +1,6 @@
 package mpa.persistence.config;
 
-import mpa.audit.config.AuditConfigurer;
+import mpa.persistence.config.audit.AuditConfigurer;
 
 import java.util.function.Consumer;
 

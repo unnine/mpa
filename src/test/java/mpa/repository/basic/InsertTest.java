@@ -1,6 +1,6 @@
 package mpa.repository.basic;
 
-import mpa.context.MybatisPersistenceManager;
+import mpa.context.MybatisPersistenceAssistant;
 import mpa.fixture.repository.RepositoryTest;
 import mpa.fixture.domain.MemberUtil;
 import mpa.fixture.domain.qualifier.TEST_DB;
@@ -23,12 +23,12 @@ public class InsertTest {
     MemberRepository memberRepository;
 
     @Autowired
-    MybatisPersistenceManager mybatisPersistenceManager;
+    MybatisPersistenceAssistant mybatisPersistenceAssistant;
 
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceManager.stopAuditing();
+        mybatisPersistenceAssistant.stopAuditing();
     }
 
 

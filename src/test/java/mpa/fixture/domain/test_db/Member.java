@@ -1,10 +1,11 @@
 package mpa.fixture.domain.test_db;
 
-import java.time.LocalDate;
-import java.util.Objects;
-import javax.annotation.Generated;
 import mpa.persistence.entity.annotation.Entity;
 import mpa.persistence.entity.annotation.Id;
+
+import javax.annotation.Generated;
+import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity(name = "Member")
 public class Member {

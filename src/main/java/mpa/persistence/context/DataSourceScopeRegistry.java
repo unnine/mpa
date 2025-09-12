@@ -1,9 +1,9 @@
 package mpa.persistence.context;
 
 import lombok.RequiredArgsConstructor;
-import mpa.audit.config.AuditAttribute;
-import mpa.audit.config.AuditConfiguration;
-import mpa.audit.config.AuditConfigurer;
+import mpa.persistence.config.audit.AuditAttribute;
+import mpa.persistence.config.audit.AuditConfiguration;
+import mpa.persistence.config.audit.AuditConfigurer;
 import mpa.persistence.config.DataSourceConfigurer;
 import mpa.persistence.config.ScopeConfigurer;
 import mpa.persistence.config.ScopeRegistry;

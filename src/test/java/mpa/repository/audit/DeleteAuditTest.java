@@ -1,17 +1,18 @@
 package mpa.repository.audit;
 
-import mpa.context.MybatisPersistenceManager;
-import mpa.fixture.repository.audit.AuditTestListener;
-import mpa.fixture.repository.RepositoryTest;
-import mpa.fixture.service.TestMemberService;
-import mpa.fixture.transaction.TransactionTestTemplate;
-import mpa.audit.context.AuditTrail;
+import mpa.audit.AuditTrail;
 import mpa.audit.config.type.CommandType;
 import mpa.audit.config.type.EventType;
+import mpa.audit.event.AuditEventExecutor;
+import mpa.context.MybatisPersistenceAssistant;
 import mpa.fixture.domain.qualifier.TEST_DB;
 import mpa.fixture.domain.test_db.Member;
 import mpa.fixture.domain.test_db.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeAll;
+import mpa.fixture.repository.RepositoryTest;
+import mpa.fixture.repository.audit.AuditTestListener;
+import mpa.fixture.service.TestMemberService;
+import mpa.fixture.transaction.TransactionTestTemplate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,23 +37,24 @@ public class DeleteAuditTest {
     TestMemberService memberService;
 
     @Autowired
-    MybatisPersistenceManager mybatisPersistenceManager;
+    MybatisPersistenceAssistant mybatisPersistenceAssistant;
 
     @Autowired
     TransactionTestTemplate transactionTestTemplate;
 
-    AuditTestListener auditTestListener = mock(AuditTestListener.class);
+    AuditTestListener auditTestListener;
 
 
-    @BeforeAll
+    @BeforeEach
     void prepare() {
-        mybatisPersistenceManager.startAuditing();
-        mybatisPersistenceManager.registerAuditTrailListener(auditTestListener);
+        mybatisPersistenceAssistant.startAuditing();
+
+        auditTestListener = mock(AuditTestListener.class);
+        mybatisPersistenceAssistant.registerAuditTrailListener(auditTestListener);
     }
 
 
     @Test
-    @Transactional
     void byId_deleteUser_successAuditing() {
         // given
         ArgumentCaptor<List<AuditTrail>> auditTrailsArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -66,30 +68,20 @@ public class DeleteAuditTest {
             }
 
             @Override
+            @Transactional
             public void then() {
                 verify(auditTestListener, times(1)).beforeCommit(auditTrailsArgumentCaptor.capture());
                 verify(auditTestListener, times(1)).afterCommit(auditTrailsArgumentCaptor.capture());
                 verify(auditTestListener, times(0)).manuallyCommit(anyList());
 
-                List<AuditTrail> auditTrails = auditTrailsArgumentCaptor.getValue();
+                auditTrailsArgumentCaptor.getAllValues().forEach(auditTrails -> {
+                    assertThat(auditTrails).hasSizeGreaterThan(0);
 
-                assertThat(auditTrails).hasSizeGreaterThan(0);
-
-                AuditTrail auditTrail = auditTrails.get(0);
-
-                assertThat(auditTrail.scope().getName()).isEqualTo("test_db");
-                assertThat(auditTrail.command()).isEqualTo(CommandType.DELETE);
-                assertThat(auditTrail.argument().getClass()).isEqualTo(Integer.class);
-                assertThat(auditTrail.argument()).isEqualTo(member.getId());
-                assertThat(auditTrail.tableName()).isEqualTo("MEMBER");
-                assertThat(auditTrail.event()).isEqualTo(EventType.TRANSACTION);
-                assertThat(auditTrail.idArgument().get("ID")).isEqualTo(String.valueOf(member.getId()));
-                assertThat(auditTrail.originData().isEmpty()).isFalse();
-                assertThat(auditTrail.originData().getRow(0).getColumn("NAME"))
-                        .hasValueSatisfying(column -> assertThat(column.value()).isEqualTo(member.getName()));
-                assertThat(auditTrail.updatedData().isEmpty()).isTrue();
-                assertThat(auditTrail.updatedTime()).isNotNull();
-                assertThat(auditTrail.label()).isEqualTo("delete member test");
+                    auditTrails.forEach(auditTrail -> {
+                        assertThat(auditTrail.event()).isEqualTo(EventType.TRANSACTION);
+                        commonAsserts(auditTrail, member);
+                    });
+                });
             }
 
             @Override
@@ -97,5 +89,66 @@ public class DeleteAuditTest {
                 memberRepository.insert(member);
             }
         });
+    }
+
+    @Test
+    void byManually_deleteUser_successAuditing() throws Exception {
+        // given
+        ArgumentCaptor<List<AuditTrail>> auditTrailsArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        List<Member> members = memberRepository.findAll();
+        Member member = members.get(0);
+
+        transactionTestTemplate.run(new TransactionTestTemplate.Runner() {
+            @Override
+            public void when() {
+                AuditEventExecutor executor = mybatisPersistenceAssistant.createAuditEventExecutor()
+                        .scope("test_db")
+                        .label("delete member test")
+                        .build();
+
+                executor.addId(member.getId(), Member.class);
+
+                memberService.delete(member.getId());
+
+                executor.execute();
+            }
+
+            @Override
+            public void then() {
+                verify(auditTestListener, times(0)).beforeCommit(anyList());
+                verify(auditTestListener, times(0)).afterCommit(anyList());
+                verify(auditTestListener, times(1)).manuallyCommit(auditTrailsArgumentCaptor.capture());
+
+
+                auditTrailsArgumentCaptor.getAllValues().forEach(auditTrails -> {
+                    assertThat(auditTrails).hasSizeGreaterThan(0);
+
+                    auditTrails.forEach(auditTrail -> {
+                        assertThat(auditTrail.event()).isEqualTo(EventType.MANUALLY);
+                        commonAsserts(auditTrail, member);
+                    });
+                });
+            }
+
+            @Override
+            public void compensate(JdbcTemplate jdbcTemplate) {
+                memberRepository.insert(member);
+            }
+        });
+    }
+
+    private void commonAsserts(AuditTrail auditTrail, Member member) {
+        assertThat(auditTrail.scope().getName()).isEqualTo("test_db");
+        assertThat(auditTrail.command()).isEqualTo(CommandType.DELETE);
+        assertThat(auditTrail.argument().getClass()).isEqualTo(Integer.class);
+        assertThat(auditTrail.argument()).isEqualTo(member.getId());
+        assertThat(auditTrail.tableName()).isEqualTo("MEMBER");
+        assertThat(auditTrail.idArgument().get("ID")).isEqualTo(String.valueOf(member.getId()));
+        assertThat(auditTrail.originData().isEmpty()).isFalse();
+        assertThat(auditTrail.originData().getRow(0).getColumn("NAME"))
+                .hasValueSatisfying(column -> assertThat(column.value()).isEqualTo(member.getName()));
+        assertThat(auditTrail.updatedData().isEmpty()).isTrue();
+        assertThat(auditTrail.updatedTime()).isNotNull();
+        assertThat(auditTrail.label()).isEqualTo("delete member test");
     }
 }

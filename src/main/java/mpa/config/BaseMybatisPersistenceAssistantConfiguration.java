@@ -23,7 +23,7 @@ public class BaseMybatisPersistenceAssistantConfiguration implements MybatisPers
 
     @Override
     public void apply() {
-        configurers.forEach(configurer -> configurer.addScope(scopeRegistry));
+        configurers.forEach(configurer -> configurer.registerScope(scopeRegistry));
     }
 
 }

@@ -1,6 +1,6 @@
 package mpa.fixture.repository;
 
-import mpa.context.MybatisPersistenceManager;
+import mpa.context.MybatisPersistenceAssistant;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +27,7 @@ public class RepositoryTestExtension implements BeforeAllCallback {
     }
 
     private void refreshCache(ApplicationContext applicationContext) {
-        MybatisPersistenceManager manager = applicationContext.getBean(MybatisPersistenceManager.class);
+        MybatisPersistenceAssistant manager = applicationContext.getBean(MybatisPersistenceAssistant.class);
         manager.refreshCache();
     }
 
