@@ -46,7 +46,7 @@ public class InsertAuditTest {
 
     @BeforeEach
     void prepare() {
-        mybatisPersistenceAssistant.startAuditing();
+        mybatisPersistenceAssistant.activateAuditing();
 
         auditTestListener = mock(AuditTestListener.class);
         mybatisPersistenceAssistant.registerAuditTrailListener(auditTestListener);

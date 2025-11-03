@@ -28,12 +28,12 @@ public class MybatisPersistenceAssistantImpl implements MybatisPersistenceAssist
     }
 
     @Override
-    public void startAuditing() {
+    public void activateAuditing() {
         environment.activateAuditing();
     }
 
     @Override
-    public void stopAuditing() {
+    public void deactivateAuditing() {
         environment.deactivateAuditing();
     }
 

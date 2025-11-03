@@ -26,7 +26,7 @@ public class InsertTest {
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceAssistant.stopAuditing();
+        mybatisPersistenceAssistant.deactivateAuditing();
     }
 
 

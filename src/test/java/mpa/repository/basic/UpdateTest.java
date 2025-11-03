@@ -31,7 +31,7 @@ public class UpdateTest {
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceAssistant.stopAuditing();
+        mybatisPersistenceAssistant.deactivateAuditing();
     }
 
 

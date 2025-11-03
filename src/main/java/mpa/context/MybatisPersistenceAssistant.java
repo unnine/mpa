@@ -7,9 +7,9 @@ public interface MybatisPersistenceAssistant {
 
     void refreshCache();
 
-    void startAuditing();
+    void activateAuditing();
 
-    void stopAuditing();
+    void deactivateAuditing();
 
     void registerAuditTrailListener(AuditTrailListener listener);
 

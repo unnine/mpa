@@ -30,7 +30,7 @@ public class DeleteTest {
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceAssistant.stopAuditing();
+        mybatisPersistenceAssistant.deactivateAuditing();
     }
 
 

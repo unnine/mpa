@@ -46,7 +46,7 @@ public class DeleteAuditJoinTest {
 
     @BeforeAll
     void prepare() {
-        mybatisPersistenceAssistant.startAuditing();
+        mybatisPersistenceAssistant.activateAuditing();
         mybatisPersistenceAssistant.registerAuditTrailListener(auditTestListener);
     }
 
