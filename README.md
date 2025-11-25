@@ -294,7 +294,7 @@ memberRepository.delete(member);
 MybatisPersistenceAssistant assistant;
 
 // 감사 시작
-assistant.startAuditing();
+assistant.activateAuditing();
 
 // 리스너 등록
 assistant.registerAuditTrailListener(new AuditTrailListener() {
