@@ -18,19 +18,16 @@ public class RunnableMybatisPersistenceObjectGenerator {
     }
 
     public ScopeConfigurer addDefaultScope() {
+        return addScope(Scope.DEFAULT_NAME);
+    }
+
+    public ScopeConfigurer addScope(String name) {
         MybatisPersistenceGeneratorScope scope = new MybatisPersistenceGeneratorScope();
         DataSourceConfigurer dataSourceConfigurer = new DataSourceConfigurer(scope.getDataSource());
         scopes.add(scope);
         ScopeConfigurer scopeConfigurer = new ScopeConfigurer(this, scope, dataSourceConfigurer);
-        scopeConfigurer.name(Scope.DEFAULT_NAME);
+        scopeConfigurer.name(name);
         return scopeConfigurer;
-    }
-
-    public ScopeConfigurer addScope() {
-        MybatisPersistenceGeneratorScope scope = new MybatisPersistenceGeneratorScope();
-        DataSourceConfigurer dataSourceConfigurer = new DataSourceConfigurer(scope.getDataSource());
-        scopes.add(scope);
-        return new ScopeConfigurer(this, scope, dataSourceConfigurer);
     }
 
 
